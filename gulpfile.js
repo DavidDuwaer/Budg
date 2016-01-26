@@ -14,6 +14,7 @@ gulp.task('scripts', function() {
 
 gulp.task('vendor', function() {
     return gulp.src([
+        './node_modules/jquery/dist/jquery.js',
         './vendor/zurb/foundation/dist/foundation.js',
         './node_modules/d3/d3.js',
     ]).pipe(concat('vendor.js'))
