@@ -9,7 +9,7 @@ function readUnit($unit) {
 }
 
 function readCSV() {
-    $dataString = file_get_contents("data/begrotingsstaten.csv");
+    $dataString = utf8_encode(file_get_contents("data/begrotingsstaten.csv"));
     $dataStrings = explode("\n", $dataString);
     array_shift($dataStrings);
     return $dataStrings;
@@ -53,7 +53,26 @@ function convertToTree($data) {
     return $tree;
 }
 
+function makeD3Readable($tree) {
+    $d3Tree = [];
+    foreach ($tree as $key => $value) {
+        if (is_array($value)) {
+            $object = [];
+            $object['name'] = $key;
+            $object['children'] = makeD3Readable($value);
+            $d3Tree[] = $object;
+        } else {
+            $leave = [];
+            $leave['name'] = $key;
+            $leave['size'] = $value;
+            $d3Tree[] = $leave;
+        }
+    }
+    return $d3Tree;
+}
+
 $csv = readCSV();
 $data = cleanAndConvert($csv);
 $tree = convertToTree($data);
-print_r($tree);
+$output = makeD3Readable($tree);
+print_r(json_encode($output));
