@@ -1,0 +1,5 @@
+{
+    "require": {
+        "zurb/foundation": "^6.1"
+    }
+}
