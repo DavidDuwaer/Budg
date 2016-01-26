@@ -20,6 +20,7 @@ function cleanAndConvert($dataStrings) {
     foreach ($dataStrings as $dataString) {
         if ($dataString == "") continue;
         $row = explode(",", $dataString);
+        if (strtoupper($row[6]) == "TOTAAL") continue;
 
         $data = [
             'year'          => $row[0],                     // Begrotingsjaar
@@ -71,8 +72,15 @@ function makeD3Readable($tree) {
     return $d3Tree;
 }
 
+function wrap($tree) {
+    $d3Tree = [];
+    $d3Tree['name'] = 'Begroting';
+    $d3Tree['children'] = $tree;
+    return $d3Tree;
+}
+
 $csv = readCSV();
 $data = cleanAndConvert($csv);
 $tree = convertToTree($data);
-$output = makeD3Readable($tree);
+$output = wrap(makeD3Readable($tree));
 print_r(json_encode($output));
