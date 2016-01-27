@@ -10,7 +10,7 @@ function readUnit($unit) {
 }
 
 function readCSV() {
-    $dataString = utf8_encode(file_get_contents("data/begrotingsstaten.csv"));
+    $dataString = file_get_contents("data/begrotingsstaten.csv");
     $dataStrings = explode("\n", $dataString);
     array_shift($dataStrings);
     return $dataStrings;
@@ -87,4 +87,4 @@ $csv = readCSV();
 $data = cleanAndConvert($csv);
 $tree = convertToTree($data);
 $output = wrap(makeD3Readable($tree));
-echo(json_encode($output));
+echo(json_encode($output, JSON_UNESCAPED_UNICODE));
