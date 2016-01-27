@@ -1,6 +1,6 @@
 
-var w = 1280 - 80,
-    h = 800 - 180,
+var w = 1125 - 30,
+    h = 600,
     x = d3.scale.linear().range([0, w]),
     y = d3.scale.linear().range([0, h]),
     color = d3.scale.category20c(),
@@ -13,7 +13,7 @@ var treemap = d3.layout.treemap()
     .sticky(true)
     .value(function(d) { return d.size; });
 
-var svg = d3.select("#body").append("div")
+var svg = d3.select("#canvas").append("div")
     .attr("class", "chart")
     .style("width", w + "px")
     .style("height", h + "px")

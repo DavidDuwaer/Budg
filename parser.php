@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: application/json');
 
 function readUnit($unit) {
     switch($unit) {
@@ -86,4 +87,4 @@ $csv = readCSV();
 $data = cleanAndConvert($csv);
 $tree = convertToTree($data);
 $output = wrap(makeD3Readable($tree));
-print_r(json_encode($output));
+echo(json_encode($output));
