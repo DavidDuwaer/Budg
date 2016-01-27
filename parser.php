@@ -39,17 +39,20 @@ function addKey(&$tree, $key) {
     if (!array_key_exists($key, $tree)) {
         $tree[$key] = [];
     }
+
+    return $key;
 }
 
 function convertToTree($data) {
     // year > type > budget > description
     $tree = [];
     foreach ($data as $object) {
-        addKey($tree, $object['year']);
-        addKey($tree[$object['year']], $object['type']);
-        addKey($tree[$object['year']][$object['type']], $object['budget']);
-        addKey($tree[$object['year']][$object['type']][$object['budget']], $object['description']);
-        $tree[$object['year']][$object['type']][$object['budget']][$object['description']] = $object['draft'];
+        $keys = [];
+        $keys[] = addKey($tree, $object['year']);
+        $keys[] = addKey($tree[$keys[0]], $object['type']);
+        $keys[] = addKey($tree[$keys[0]][$keys[1]], $object['budget']);
+        $keys[] = addKey($tree[$keys[0]][$keys[1]][$keys[2]], $object['description']);
+        $tree[$keys[0]][$keys[1]][$keys[2]][$keys[3]] = $object['draft'];
     }
     return $tree;
 }
