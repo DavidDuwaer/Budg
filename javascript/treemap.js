@@ -17,7 +17,7 @@ var w = 1125 - 30,
     tooltip;
 
 // Select years
-visualize(selectYear(getData(), 2013));
+visualize(setOUV(selectYear(getData(), 2013), {"U": 1, "V": 1, "O": 1}));
 
 function visualize(data) {
     d3.select("#canvas div").remove();
