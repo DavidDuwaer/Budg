@@ -16,17 +16,8 @@ var w = 1125 - 30,
     svg,
     tooltip;
 
-// Select years...
-selectYears([2013]);
-
-// ... and listen for changes
-$(".js-option__years").change(function(e) {
-    var checked = []
-    $(".js-option__years").each(function(i, e) {
-        if (e.checked) {checked.push(+e.name)}
-    })
-    selectYears(checked);
-})
+// Select years
+visualize(selectYear(getData(), 2013));
 
 function visualize(data) {
     d3.select("#canvas div").remove();

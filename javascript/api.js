@@ -6,29 +6,37 @@
  | API rather than manipulate the data directly.
  -------------------------------------------------------------------------*/
 
-// TODO: refactor into one part that gets and stores the JSON file, and another part that selects the years.
+var json;
+
 /**
- * Retrieves the selected years.
- * @param selectedYears An array of selected years
- * @returns A promise object
+ * Retrieve or return data.
  */
-function retrieveYears(selectedYears) {
-    var deferred = new $.Deferred();
-
-    $.getJSON("data/budget.json", function(data) {
-        var tree = [];
-        var name = data["name"];
-        var years = data["children"];
-        for (var index in years) {
-            var year = years[index];
-            if ($.inArray(year["name"], selectedYears) != -1) {
-                tree.push(year);
+function getData() {
+    if (json == undefined) {
+        $.ajax({
+            url: "data/budget.json",
+            dataType: 'json',
+            async: false,
+            success: function (data) {
+                json = data;
             }
-        }
-        // found it, return this object.
-        var d3Tree = JSON.parse(JSON.stringify({"name": name, "children": tree}));
-        deferred.resolve(d3Tree);
-    })
+        });
+    }
+    return json;
+}
 
-    return deferred.promise();
+/*
+ * Select year from json.
+ * @param json          D3 parse-able JSON object
+ * @param selectedYear  The year to select
+ * @returns {year} or {null}
+ */
+function selectYear(json, selectedYear) {
+    var years = json["children"];
+    for (var index in years) {
+        var year = years[index];
+        if (year["name"] == selectedYear) {
+            return year;
+        }
+    }
 }
