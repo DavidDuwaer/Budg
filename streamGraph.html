@@ -42,31 +42,113 @@
         var width = 960,
                 height = 500;
 
+        /*
+         * Define scales
+         */
         var x = d3.scale.linear()
                 .domain([0, yearValues.length - 1])
                 .range([0, width]);
-
         var y = d3.scale.linear()
                 .domain([0, d3.max(layers0.concat(layers1), function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); })])
                 .range([height, 0]);
-
+        var yReverse = d3.scale.linear()
+                .domain([0, d3.max(layers0.concat(layers1), function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); })])
+                .range([0, height]);
         var color = d3.scale.linear()
-                .range(["#aad", "#556"]);
+                .range(["#c30", "#ea8"]);
 
+        /*
+         * Returns path attribute as a function of d
+         */
         area = d3.svg.area()
                 .x(function(d) { return x(d.x); })
                 .y0(function(d) { return y(d.y0); })
                 .y1(function(d) { return y(d.y0 + d.y); });
 
-        var svg = d3.select("body").append("svg")
+        /*
+         * Draw canvas
+         */
+        var canvas = d3.select("body").append("svg")
                 .attr("width", width)
                 .attr("height", height);
 
-        svg.selectAll("path")
+        /*
+         * Draw stream graph
+         */
+        canvas.selectAll("path")
                 .data(layers0)
                 .enter().append("path")
                 .attr("d", area)
                 .style("fill", function() { return color(Math.random()); });
+
+        /*
+         * Append tooltips
+         */
+        canvas.selectAll("path")
+                .data(layers0)
+                .append("svg:title")
+                .text(function(d) { return d[0].name; });
+
+        /*
+         * Add in-graph labels
+         */
+        var labels = canvas.selectAll("text")
+                .data(layers0)
+                .enter()
+                .append("text");
+        canvas.selectAll("text")
+                .data(layers0)
+                //.attr("dx", -30)
+                .attr("text-anchor", "middle")
+                .attr("fill", "white")
+                .attr("font-size", "10pt")
+                .attr("x", function(d) {
+                    //console.log(yReverse(d[0].y));
+                    var xc = 0, yMax = 0;
+                    $.each(d, function(i, point)
+                    {
+                        console.log(yReverse(point.y) + " : " + x(point.x));
+                        if (yReverse(point.y) >= 30 && x(point.x) != 0 && x(point.x) != width)
+                        {
+                            if (point.y > yMax)
+                            {
+                                xc = x(point.x);
+                                yMax = y;
+                            }
+                        }
+                    });
+                    return xc;
+                })
+                .attr("y", function(d) {
+                    var yc = 0, yMax = 0;
+                    $.each(d, function(i, point)
+                    {
+                        if (yReverse(point.y) > 30 && x(point.x) != 0 && x(point.x) != width)
+                        {
+                            if (point.y > yMax)
+                            {
+                                yc = y(point.y0 + 0.5 * point.y);
+                                yMax = y;
+                            }
+                        }
+                    });
+                    return yc;
+                })
+                .text(function(d) {
+                    var txt = "", yMax = 0;
+                    $.each(d, function(i, point)
+                    {
+                        if (yReverse(point.y) > 30 && x(point.x) != 0 && x(point.x) != width)
+                        {
+                            if (point.y > yMax)
+                            {
+                                txt = point.name;
+                                yMax = y;
+                            }
+                        }
+                    });
+                    return txt;
+                });
     }
 
     function transition() {
@@ -81,9 +163,10 @@
                 .attr("d", area);
     }
 
-    // Inspired by Lee Byron's test data generator.
     /*
-     Returns an arrray of scalars
+     * Inspired by Lee Byron's test data generator.
+     *
+     * Returns an arrray of objects that have an x and an y attribute.
      */
     function bumpLayer(n) {
 
@@ -134,6 +217,8 @@
         "XVII: Buitenlandse Handel & Ontwikkelingssamenwerking",
         "XVIII: Wonen en Rijksdienst"
     ];
+    var sideValues = ["O", "U", "V"];
+    var sideSigns = [-1, 1, 1];
     console.log(yearValues[0]);
     var yearsScale = d3.scale.linear()
             .domain(yearValues)
@@ -141,6 +226,9 @@
     var ministriesScale = d3.scale.ordinal()
             .domain(ministryValues)
             .range(d3.range(0, ministryValues.length - 1, 1));
+    var sidesScale = d3.scale.ordinal()
+            .domain(sideValues)
+            .range(sideSigns);
 
     var multipleTimeSeries = [];
     for (var i = 0; i < ministryValues.length; i++)
@@ -148,7 +236,7 @@
         multipleTimeSeries[i] = [];
         for (var j = 0; j < yearValues.length; j++)
         {
-            multipleTimeSeries[i][j] = {x: yearValues[j], y: 0};
+            multipleTimeSeries[i][j] = {x: yearValues[j], y: 0, name: ""};
         }
     }
 
@@ -168,10 +256,15 @@
                     var departments = ministry.children;
                     $.each(departments, function(l, department)
                     {
-                        var amount =+ department.size;
-                        multipleTimeSeries[ministryI][yearI] = {x: yearsScale(year.name), y: +amount};
+                        var amount = sidesScale(side.name) * department.size;
+                        //var amount = department.size;
+                        multipleTimeSeries[ministryI][yearI] = {
+                            x: yearsScale(year.name),
+                            y: multipleTimeSeries[ministryI][yearI].y + amount,
+                            name: ministry.name
+                        };
                     });
-                    console.log("(" + ministryI + ", " + yearI + ") " + ministry.name + " :: " + multipleTimeSeries[ministryI][yearI].x);
+                    console.log("(" + ministryI + ", " + yearI + ") " + ministry.name + " :: " + multipleTimeSeries[ministryI][yearI].y + " :: " + sidesScale(side.name));
                 });
             });
         });
