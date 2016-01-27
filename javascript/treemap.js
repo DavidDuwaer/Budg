@@ -13,7 +13,8 @@ var w = 1125 - 30,
     color = d3.scale.category20c(),
     root,
     node,
-    svg;
+    svg,
+    tooltip;
 
 // Select years...
 selectYears([2013]);
@@ -45,11 +46,13 @@ function visualize(data) {
         .attr("height", h)
         .append("svg:g")
         .attr("transform", "translate(.5,.5)");
-
     node = root = data;
+
+    setHeader(root.name)
 
     var nodes = treemap.nodes(root)
         .filter(function(d) { return !d.children; });
+
 
     var cell = svg.selectAll("g")
         .data(nodes)
@@ -57,12 +60,22 @@ function visualize(data) {
             .append("svg:g")
             .attr("class", "cell")
             .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-            .on("click", function(d) { return zoom(node == d.parent ? root : d.parent); })
+            .on("click", function(d) { return zoom(node == d.parent ? root : d.parent, d); })
+            .on("mouseover", function(d) {
+                updateBreadcrumbs(d)
+                d3.select(this)
+                    .style("opacity", "0.8")
+            })
+            .on("mouseout", function(d) {
+                d3.select(this)
+                    .style("opacity", "1")
+            });
 
     cell.append("svg:rect")
         .attr("width", function(d) { return d.dx - 1; })
         .attr("height", function(d) { return d.dy - 1; })
-        .style("fill", function(d) { return color(d.parent.name); });
+        .style("fill", function(d) { return color(d.parent.name); })
+
 
     cell.append("svg:text")
         .attr("x", function(d) { return d.dx / 2; })
@@ -88,7 +101,21 @@ function count(d) {
     return 1;
 }
 
-function zoom(d) {
+function updateBreadcrumbs(d) {
+    var breadcrumbs = getBreadcrumbs(d);
+    setHeader(breadcrumbs)
+}
+
+function setHeader(name) {
+    $(".js-breadcrumbs").html(name)
+}
+
+function zoom(d, child) {
+    if (d == root) {
+        setHeader(d.name);
+    } else {
+        updateBreadcrumbs(child)
+    }
     var kx = w / d.dx, ky = h / d.dy;
     x.domain([d.x, d.x + d.dx]);
     y.domain([d.y, d.y + d.dy]);
@@ -108,4 +135,5 @@ function zoom(d) {
 
     node = d;
     d3.event.stopPropagation();
+
 }
