@@ -1,93 +1,185 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<title>Streamgraph</title>
-<style>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Streamgraph</title>
+    <style>
 
-    body {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      margin: auto;
-      position: relative;
-      width: 960px;
-    }
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            margin: auto;
+            position: relative;
+            width: 960px;
+        }
 
-    button {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-    }
+        button {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
 
-</style>
+    </style>
+</head>
+<body>
+
 <button onclick="transition()">Update</button>
 <script src="node_modules/d3/d3.min.js"></script>
+<script src="node_modules/jquery/dist/jquery.min.js"></script>
 <script>
 
-    var n = 20, // number of layers
-        m = 200, // number of samples per layer
-        stack = d3.layout.stack().offset("expand"),
-        layers0 = stack(d3.range(n).map(function() { return bumpLayer(m); })),
-        layers1 = stack(d3.range(n).map(function() { return bumpLayer(m); }));
+    var layers0, layers1, area;
 
-    var width = 960,
-        height = 500;
+    function drawStreamGraph()
+    {
+        var n = 20, // number of layers
+                m = 200, // number of samples per layer
+                stack = d3.layout.stack().offset("wiggle");
+                //layers0 = stack(d3.range(n).map(function() { return bumpLayer(m); })),
+                //layers1 = stack(d3.range(n).map(function() { return bumpLayer(m); }));
+        layers0 = stack(multipleTimeSeries);
+        layers1 = stack(multipleTimeSeries);
 
-    var x = d3.scale.linear()
-        .domain([0, m - 1])
-        .range([0, width]);
+        var width = 960,
+                height = 500;
 
-    var y = d3.scale.linear()
-        .domain([0, d3.max(layers0.concat(layers1), function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); })])
-        .range([height, 0]);
+        var x = d3.scale.linear()
+                .domain([0, yearValues.length - 1])
+                .range([0, width]);
 
-    var color = d3.scale.linear()
-        .range(["#aad", "#556"]);
+        var y = d3.scale.linear()
+                .domain([0, d3.max(layers0.concat(layers1), function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); })])
+                .range([height, 0]);
 
-    var area = d3.svg.area()
-        .x(function(d) { return x(d.x); })
-        .y0(function(d) { return y(d.y0); })
-        .y1(function(d) { return y(d.y0 + d.y); });
+        var color = d3.scale.linear()
+                .range(["#aad", "#556"]);
 
-    var svg = d3.select("body").append("svg")
-        .attr("width", width)
-        .attr("height", height);
+        area = d3.svg.area()
+                .x(function(d) { return x(d.x); })
+                .y0(function(d) { return y(d.y0); })
+                .y1(function(d) { return y(d.y0 + d.y); });
 
-    svg.selectAll("path")
-        .data(layers0)
-      .enter().append("path")
-        .attr("d", area)
-        .style("fill", function() { return color(Math.random()); });
+        var svg = d3.select("body").append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+        svg.selectAll("path")
+                .data(layers0)
+                .enter().append("path")
+                .attr("d", area)
+                .style("fill", function() { return color(Math.random()); });
+    }
 
     function transition() {
-      d3.selectAll("path")
-          .data(function() {
-            var d = layers1;
-            layers1 = layers0;
-            return layers0 = d;
-          })
-        .transition()
-          .duration(2500)
-          .attr("d", area);
+        d3.selectAll("path")
+                .data(function() {
+                    var d = layers1;
+                    layers1 = layers0;
+                    return layers0 = d;
+                })
+                .transition()
+                .duration(2500)
+                .attr("d", area);
     }
 
     // Inspired by Lee Byron's test data generator.
     /*
-    Returns an arrray of scalars
-    */
+     Returns an arrray of scalars
+     */
     function bumpLayer(n) {
 
-      function bump(a) {
-        var x = 1 / (.1 + Math.random()),
-            y = 2 * Math.random() - .5,
-            z = 10 / (.1 + Math.random());
-        for (var i = 0; i < n; i++) {
-          var w = (i / n - y) * z;
-          a[i] += x * Math.exp(-w * w);
+        function bump(a) {
+            var x = 1 / (.1 + Math.random()),
+                    y = 2 * Math.random() - .5,
+                    z = 10 / (.1 + Math.random());
+            for (var i = 0; i < n; i++) {
+                var w = (i / n - y) * z;
+                a[i] += x * Math.exp(-w * w);
+            }
         }
-      }
 
-      var a = [], i;
-      for (i = 0; i < n; ++i) a[i] = 0;
-      for (i = 0; i < 5; ++i) bump(a);
-      return a.map(function(d, i) { return {x: i, y: Math.max(0, d)}; });
+        var a = [], i;
+        for (i = 0; i < n; ++i) a[i] = 0;
+        for (i = 0; i < 5; ++i) bump(a);
+        return a.map(function(d, i) { return {x: i, y: Math.max(0, d)}; });
     }
 
+    /*
+     * Make data arrays
+     */
+    var yearValues = ["2013", "2014", "2015", "2016"];
+    var ministryValues = [
+        "A: Infrastructuurfonds",
+        "B: Gemeentefonds",
+        "C: Provinciefonds",
+        "F: Diergezondheidsfonds",
+        "H: BES-fonds",
+        "I: De Koning",
+        "IIa: De Staten Generaal",
+        "IIb: Overige Hoge Colleges van Staat",
+        "III: Algemene Zaken",
+        "IV: Koninkrijksrelaties",
+        "IXa: Nationale Schuld",
+        "IXb: Financiën",
+        "J: Deltafonds",
+        "Rijk",
+        "V: Buitenlandse Zaken",
+        "VI: Veiligheid en Justitie",
+        "VII: Binnenlandse Zaken en Koninkrijksrelaties",
+        "VIII: Onderwijs: Cultuur en Wetenschap",
+        "X: Defensie",
+        "XII: Infrastructuur en Milieu",
+        "XIII: Economische Zaken",
+        "XV: Sociale Zaken en Werkgelegenheid",
+        "XVI: Volksgezondheid: Welzijn en Sport",
+        "XVII: Buitenlandse Handel & Ontwikkelingssamenwerking",
+        "XVIII: Wonen en Rijksdienst"
+    ];
+    console.log(yearValues[0]);
+    var yearsScale = d3.scale.linear()
+            .domain(yearValues)
+            .range(d3.range(0, yearValues.length - 1, 1));
+    var ministriesScale = d3.scale.ordinal()
+            .domain(ministryValues)
+            .range(d3.range(0, ministryValues.length - 1, 1));
+
+    var multipleTimeSeries = [];
+    for (var i = 0; i < ministryValues.length; i++)
+    {
+        multipleTimeSeries[i] = [];
+        for (var j = 0; j < yearValues.length; j++)
+        {
+            multipleTimeSeries[i][j] = {x: yearValues[j], y: 0};
+        }
+    }
+
+    $.getJSON("data/budget.json", function ( data )
+    {
+        var years = data.children;
+        $.each(years, function(i, year)
+        {
+            var yearI = yearsScale(year.name);
+            var sides = year.children;
+            $.each(sides, function(j, side)
+            {
+                var ministries = side.children;
+                $.each(ministries, function(k, ministry)
+                {
+                    var ministryI = ministriesScale(ministry.name);
+                    var departments = ministry.children;
+                    $.each(departments, function(l, department)
+                    {
+                        var amount =+ department.size;
+                        multipleTimeSeries[ministryI][yearI] = {x: yearsScale(year.name), y: +amount};
+                    });
+                    console.log("(" + ministryI + ", " + yearI + ") " + ministry.name + " :: " + multipleTimeSeries[ministryI][yearI].x);
+                });
+            });
+        });
+        drawStreamGraph();
+    });
+
+
 </script>
+
+</body>
+</html>
