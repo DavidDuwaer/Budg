@@ -39,4 +39,26 @@ function selectYear(json, selectedYear) {
             return year;
         }
     }
+    return null;
 }
+
+function setOUV(json, scale) {
+    var U = json["children"][0]
+    var V = json["children"][1]
+    var O = json["children"][2]
+    for (var key in O["children"]) {
+        for (var subkey in O["children"][key]["children"]) {
+            console.log(O["children"][key]["children"][subkey])
+            O["children"][key]["children"][subkey]["size"] = O["children"][key]["children"][subkey]["size"] * scale["O"]
+            try {
+                O["children"][key]["children"][subkey]["size"] += V["children"][key]["children"][subkey]["size"] * scale["V"]
+            } catch(e) {}
+            try {
+                O["children"][key]["children"][subkey]["size"] += U["children"][key]["children"][subkey]["size"] * scale["U"]
+            } catch(e) {}
+        }
+    }
+    return JSON.parse(JSON.stringify(O));
+}
+
+console.log(setOUV(selectYear(getData(), 2013), {"U": 1, "V": 1, "O": 1}));
