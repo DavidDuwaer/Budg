@@ -1,29 +1,52 @@
-
+// Global variables
 var w = 1125 - 30,
     h = 600,
     x = d3.scale.linear().range([0, w]),
     y = d3.scale.linear().range([0, h]),
     color = d3.scale.category20c(),
     root,
-    node;
-
-var treemap = d3.layout.treemap()
-    .round(false)
-    .size([w, h])
-    .sticky(true)
-    .value(function(d) { return d.size; });
-
-var svg = d3.select("#canvas").append("div")
-    .attr("class", "chart")
-    .style("width", w + "px")
-    .style("height", h + "px")
-    .append("svg:svg")
-    .attr("width", w)
-    .attr("height", h)
-    .append("svg:g")
-    .attr("transform", "translate(.5,.5)");
+    node,
+    svg;
 
 d3.json("data/budget.json", function(data) {
+    visualize(data);
+});
+
+$(".js-option__years").each(function(i, e) {
+    e.checked = true;
+})
+
+$(".js-option__years").change(function(e) {
+    var checked = []
+    $(".js-option__years").each(function(i, e) {
+        if (e.checked) {checked.push(+e.name)}
+    })
+    //checked = [2014, 2015]
+    console.log("Selecting")
+    console.log(checked)
+    selectYears(checked);
+})
+
+function visualize(data) {
+    d3.select("#canvas div").remove();
+
+    var treemap = d3.layout.treemap()
+        .round(false)
+        .size([w, h])
+        .sticky(true)
+        .value(function(d) { return d.size; });
+
+    svg = d3.select("#canvas").append("div")
+        .attr("class", "chart")
+        .style("width", w + "px")
+        .style("height", h + "px")
+        .append("svg:svg")
+        .attr("width", w)
+        .attr("height", h)
+        .append("svg:g")
+        .attr("transform", "translate(.5,.5)");
+
+    console.log("visualize")
     node = root = data;
 
     var nodes = treemap.nodes(root)
@@ -31,10 +54,11 @@ d3.json("data/budget.json", function(data) {
 
     var cell = svg.selectAll("g")
         .data(nodes)
-        .enter().append("svg:g")
-        .attr("class", "cell")
-        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-        .on("click", function(d) { return zoom(node == d.parent ? root : d.parent); });
+        .enter()
+            .append("svg:g")
+            .attr("class", "cell")
+            .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+            .on("click", function(d) { return zoom(node == d.parent ? root : d.parent); })
 
     cell.append("svg:rect")
         .attr("width", function(d) { return d.dx - 1; })
@@ -55,7 +79,7 @@ d3.json("data/budget.json", function(data) {
         treemap.value(this.value == "size" ? size : count).nodes(root);
         zoom(node);
     });
-});
+}
 
 function size(d) {
     return d.size;
@@ -63,6 +87,34 @@ function size(d) {
 
 function count(d) {
     return 1;
+}
+
+function retrieveYears(selectedYears) {
+    var deferred = new $.Deferred();
+
+    $.getJSON("data/budget.json", function(data) {
+        var tree = [];
+        var name = data["name"];
+        var years = data["children"];
+        for (var index in years) {
+            var year = years[index];
+            if ($.inArray(year["name"], selectedYears) != -1) {
+                tree.push(year);
+            }
+        }
+        // found it, return this object.
+        var d3Tree = JSON.parse(JSON.stringify({"name": name, "children": tree}));
+        deferred.resolve(d3Tree);
+    })
+
+    return deferred.promise();
+}
+
+function selectYears(years) {
+    retrieveYears(years).done(function(json){
+        console.log(json);
+        visualize(json);
+    })
 }
 
 function zoom(d) {
