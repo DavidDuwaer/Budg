@@ -1,14 +1,18 @@
 /*-------------------------------------------------------------------------
-| Base
+| Tree map
 | =========================================================================
-| Unclassed HTML elements (type selectors)
+| Tree map styling
 -------------------------------------------------------------------------*/
-html,
-body {
-  margin: 0;
-  font-size: 15px;
+.chart {
+  display: block;
+  margin: auto;
+  margin-top: 40px;
 }
 
-* {
-  box-sizing: border-box;
+text {
+  font-size: 11px;
+}
+
+rect {
+  fill: none;
 }

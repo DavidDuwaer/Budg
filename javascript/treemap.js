@@ -45,7 +45,7 @@ function visualize(data) {
         .attr("height", h)
         .append("svg:g")
         .attr("transform", "translate(.5,.5)");
-    
+
     node = root = data;
 
     var nodes = treemap.nodes(root)
