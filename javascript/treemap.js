@@ -16,10 +16,11 @@ var w = $("#canvas").width() - getScrollbarWidth(),
     svg,
     tooltip;
 
-console.log(w);
-
 // Select years
 visualize(setOUV(selectYear(getData(), 2013), {"U": 1, "V": 1, "O": 1}));
+state.subscribe(function(state) {
+    visualize(setOUV(selectYear(getData(), state.year), {"U": 1, "V": 1, "O": 1}));
+})
 
 function visualize(data) {
     d3.select("#canvas div").remove();

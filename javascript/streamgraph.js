@@ -76,11 +76,9 @@ function drawStreamGraph()
         .attr("text-anchor", "middle")
         .attr("class", "streamGraphLabel")
         .attr("x", function(d) {
-            //console.log(yReverse(d[0].y));
             var xc = 0, yMax = 0;
             $.each(d, function(i, point)
             {
-                console.log(yReverse(point.y) + " : " + x(point.x));
                 if (yReverse(point.y) >= 30 && x(point.x) != 0 && x(point.x) != width)
                 {
                     if (point.y > yMax)
@@ -160,6 +158,8 @@ function canvasMouseMove()
         slider
             .attr("x1", xSliderScale(xa))
             .attr("x2", xSliderScale(xa));
+        state.year = xa + state.minimum;
+        state.notify();
     }
 
     /*
@@ -275,7 +275,6 @@ $.getJSON("data/budget.json", function ( data )
                         c: color(ministry.name)
                     };
                 });
-                console.log("(" + ministryI + ", " + yearI + ") " + ministry.name + " :: " + multipleTimeSeries[ministryI][yearI].y + " :: " + sidesScale(side.name));
             });
         });
     });

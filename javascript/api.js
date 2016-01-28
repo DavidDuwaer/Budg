@@ -88,7 +88,6 @@ function setOUV(json, scale) {
     var O = json["children"][2]
     for (var key in O["children"]) {
         for (var subkey in O["children"][key]["children"]) {
-            console.log(O["children"][key]["children"][subkey])
             O["children"][key]["children"][subkey]["size"] = O["children"][key]["children"][subkey]["size"] * scale["O"]
             try {
                 O["children"][key]["children"][subkey]["size"] += V["children"][key]["children"][subkey]["size"] * scale["V"]
@@ -100,5 +99,3 @@ function setOUV(json, scale) {
     }
     return JSON.parse(JSON.stringify(O));
 }
-
-console.log(setOUV(selectYear(getData(), 2013), {"U": 1, "V": 1, "O": 1}));

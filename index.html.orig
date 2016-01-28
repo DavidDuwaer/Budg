@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Budgr</title>
+        <link rel="stylesheet" href="dist/css/main.css">
+    </head>
+    <body>
+    <header>
+        <h3>Budg</h3>
+        <div class="js-breadcrumbs"></div>
+    </header>
+    <div class="row full-width">
+        <div class="large-5 columns no-padding black">
+            <div id="streamGraphDiv">
+
+            </div>
+        </div>
+        <div class="large-5 columns no-padding black">
+            <div id="canvas"></div>
+        </div>
+        <div class="large-2 columns">
+<<<<<<< HEAD
+            <div class="control-tabs">
+                <a class="tab-legend tab tab--active" onclick="showView(this, 'legend')">Legend</a>
+                <a class="tab-settings tab" onclick="showView(this, 'settings')">Settings</a>
+            </div>
+            <div class="tab-views">
+                <div class="legend-view tab-view tab-view--active">
+                    <div id="colorLegendDiv">
+                    </div>
+                </div>
+                <div class="settings-view tab-view">
+
+                </div>
+=======
+            <div id="colorLegendDiv">
+            <h2>Legenda</h2>
+            <table>
+            </table>
+>>>>>>> edfcb185c5ab08f724e58ba08eed3906fc817ef5
+            </div>
+        </div>
+    </div>
+
+        <script src="dist/js/vendor.js"></script>
+        <script src="dist/js/all.js"></script>
+    </body>
+</html>
