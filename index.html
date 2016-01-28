@@ -6,44 +6,27 @@
         <link rel="stylesheet" href="dist/css/main.css">
     </head>
     <body>
-        <div class="row">
-            <div class="small-12 columns">
-                <h1>BUDG</h1>
-                <div class="js-breadcrumbs"></div>
-                <div id="canvas" class="responsive"></div>
+    <header>
+        <h3>Budg</h3>
+        <div class="js-breadcrumbs"></div>
+    </header>
+    <div class="row full-width">
+        <div class="large-5 columns no-padding black">
+            <div id="streamGraphDiv">
+
             </div>
         </div>
-        <div class="row">
-            <div class="small-12 columns">
-                <fieldset class="fieldset">
-                    <legend>Options</legend>
-                    <div class="row">
-                        <div class="small-3 columns">
-                            <label><input type="radio" onclick="visualize(selectYear(getData(), 2013))" name="year" checked> 2013</label>
-                        </div>
-                        <div class="small-3 columns">
-                            <label><input type="radio" onclick="visualize(selectYear(getData(), 2014))" name="year"> 2014</label>
-                        </div>
-                        <div class="small-3 columns">
-                            <label><input type="radio" onclick="visualize(selectYear(getData(), 2015))" name="year"> 2015</label>
-                        </div>
-                        <div class="small-3 columns">
-                            <label><input type="radio" onclick="visualize(selectYear(getData(), 2016))" name="year"> 2016</label>
-                        </div>
-                    </div>
-                </fieldset>
+        <div class="large-5 columns no-padding black">
+            <div id="canvas"></div>
+        </div>
+        <div class="large-2 columns">
+            <div id="colorLegendDiv">
+            <h2>Legend</h2>
+            <table>
+            </table>
             </div>
         </div>
-        <div class="row">
-            <div class="small-12 columns">
-                <div id="streamGraphDiv" class="responsive"></div>
-                <div id="colorLegendDiv">
-                    <h2>Legend</h2>
-                    <table>
-                    </table>
-                </div>
-            </div>
-        </div>
+    </div>
 
         <script src="dist/js/vendor.js"></script>
         <script src="dist/js/all.js"></script>

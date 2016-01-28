@@ -4,7 +4,7 @@
 
 var layers0, layers1, area;
 
-var streamGraphWidth = getWidth();
+var streamGraphWidth = $("#streamGraphDiv").width() - getScrollbarWidth();
 var streamGraphHeight = 500;
 var xSliderScale = d3.scale.linear()
     .domain([0, yearValues.length - 1])

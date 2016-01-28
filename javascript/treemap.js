@@ -6,15 +6,17 @@
  -------------------------------------------------------------------------*/
 
 // Global variables
-var w = getWidth(),
-    h = 600,
+var w = $("#canvas").width() - getScrollbarWidth(),
+    h = getHeight(),
     x = d3.scale.linear().range([0, w]),
     y = d3.scale.linear().range([0, h]),
-    color = d3.scale.category20c(),
+    color = d3.scale.category20b(),
     root,
     node,
     svg,
     tooltip;
+
+console.log(w);
 
 // Select years
 visualize(setOUV(selectYear(getData(), 2013), {"U": 1, "V": 1, "O": 1}));

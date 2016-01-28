@@ -14,8 +14,9 @@
 
 .js-breadcrumbs {
   padding: 10px;
-  background: #222;
   color: white;
+  background: #E7BA52;
+  height: 2.5rem;
 }
 
 svg {
@@ -25,7 +26,6 @@ svg {
 rect {
   pointer-events: all;
   cursor: pointer;
-  stroke: #EEEEEE;
 }
 
 .chart {
