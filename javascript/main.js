@@ -11,6 +11,10 @@ var state = {
     year: 2016,
     minimum: 2013,
     ministryHighlighted: null,
+    budgetScale: {"U": 1, "V": 1, "O": -1},
+    getSigns: function() {
+        return [this.budgetScale["U"], this.budgetScale["V"], this.budgetScale["O"]]
+    },
     sliderMouseDown: false,
     subscribers: [],
     subscribe: function(callback) {
@@ -25,8 +29,8 @@ var state = {
 
 var yearValues = getYearValues();
 var ministryValues = getMinistryValues();
-var sideValues = ["O", "U", "V"];
-var sideSigns = [-1, 1, 1];
+var sideValues = getBudgetTypes();
+var sideSigns = state.getSigns();
 var yearsScale = d3.scale.linear()
     .domain(yearValues)
     .range(d3.range(0, yearValues.length - 1, 1));

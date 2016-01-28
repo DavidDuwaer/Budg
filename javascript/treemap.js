@@ -17,9 +17,9 @@ var w = $("#canvas").width() - getScrollbarWidth(),
     tooltip;
 
 // Select years
-visualize(setOUV(selectYear(getData(), 2013), {"U": 1, "V": 1, "O": 1}));
+visualize(setOUV(selectYear(getData(), 2013), state.budgetScale));
 state.subscribe(function(state) {
-    visualize(setOUV(selectYear(getData(), state.year), {"U": 1, "V": 1, "O": 1}));
+    visualize(setOUV(selectYear(getData(), state.year), state.budgetScale));
 })
 
 function visualize(data) {
