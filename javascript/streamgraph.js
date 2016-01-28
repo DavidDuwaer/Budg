@@ -6,18 +6,13 @@ var layers0, layers1, area;
 
 function drawStreamGraph()
 {
-    var n = 20, // number of layers
-        m = 200, // number of samples per layer
-        stack = d3.layout.stack().offset("wiggle");
-    //layers0 = stack(d3.range(n).map(function() { return bumpLayer(m); })),
-    //layers1 = stack(d3.range(n).map(function() { return bumpLayer(m); }));
+    var stack = d3.layout.stack().offset("wiggle");
     layers0 = stack(multipleTimeSeries);
     layers1 = stack(multipleTimeSeries);
 
     var width = $("#streamGraphDiv").width() - getScrollbarWidth(),
         height = getHeight();
 
-    console.log(width);
 
     /*
      * Define scales
@@ -163,7 +158,7 @@ function transition() {
  */
 //    var color = d3.scale.linear()
 //            .range(["#c30", "#ea8"]);
-var color = d3.scale.category20b();
+var color = d3.scale.category20();
 
 /*
  * Make data arrays
