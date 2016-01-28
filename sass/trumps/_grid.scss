@@ -7,8 +7,25 @@
   max-width: 1125px;
 }
 
+.full-width {
+  max-width: none;
+  width: 100%;
+}
+
 .column,
 .columns {
-  padding-left: 15px;
-  padding-right: 15px;
+  padding: 10px 15px;
+}
+
+.no-padding {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.separator {
+  border-left: 1px solid white;
+}
+
+.black {
+  background-color: #222;
 }

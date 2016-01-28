@@ -14,8 +14,10 @@ function drawStreamGraph()
     layers0 = stack(multipleTimeSeries);
     layers1 = stack(multipleTimeSeries);
 
-    var width = getWidth(),
-        height = 500;
+    var width = $("#streamGraphDiv").width() - getScrollbarWidth(),
+        height = getHeight();
+
+    console.log(width);
 
     /*
      * Define scales
@@ -161,7 +163,7 @@ function transition() {
  */
 //    var color = d3.scale.linear()
 //            .range(["#c30", "#ea8"]);
-var color = d3.scale.category20();
+var color = d3.scale.category20b();
 
 /*
  * Make data arrays
