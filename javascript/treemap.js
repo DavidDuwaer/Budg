@@ -6,7 +6,7 @@
  -------------------------------------------------------------------------*/
 
 // Global variables
-var w = 1125 - 30,
+var w = getWidth(),
     h = 600,
     x = d3.scale.linear().range([0, w]),
     y = d3.scale.linear().range([0, h]),

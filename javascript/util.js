@@ -15,3 +15,7 @@ function getBreadcrumbs(d) {
 
     return breadcrumbs.reverse().join(" / ");
 }
+
+function getWidth() {
+    return 1125 - 30;
+}

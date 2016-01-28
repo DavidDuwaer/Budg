@@ -14,7 +14,7 @@ function drawStreamGraph()
     layers0 = stack(multipleTimeSeries);
     layers1 = stack(multipleTimeSeries);
 
-    var width = 960,
+    var width = getWidth(),
         height = 500;
 
     /*

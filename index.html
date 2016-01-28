@@ -4,8 +4,6 @@
         <meta charset="utf-8">
         <title>Budgr</title>
         <link rel="stylesheet" href="dist/css/main.css">
-        <link rel="stylesheet" type="text/css" href="style/streamgraph.css">
-        <link rel="stylesheet" type="text/css" href="style/legend.css">
     </head>
     <body>
         <div class="row">
@@ -36,16 +34,18 @@
                 </fieldset>
             </div>
         </div>
-
-        <div id="streamGraphDiv"></div>
-        <div id="colorLegendDiv">
-            <h2>Legend</h2>
-            <table>
-            </table>
+        <div class="row">
+            <div class="small-12 columns">
+                <div id="streamGraphDiv" class="responsive"></div>
+                <div id="colorLegendDiv">
+                    <h2>Legend</h2>
+                    <table>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <script src="dist/js/vendor.js"></script>
         <script src="dist/js/all.js"></script>
-        <script src="javascript/streamgraph.js"></script>
     </body>
 </html>
