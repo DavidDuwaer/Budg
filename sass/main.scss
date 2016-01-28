@@ -44,10 +44,16 @@
 /*-------------------------------------------------------------------------
 | Partials
 -------------------------------------------------------------------------*/
+@import url('https://fonts.googleapis.com/css?family=Lato');
+/*-------------------------------------------------------------------------
+| Partials
+-------------------------------------------------------------------------*/
 @import "global/base";
 @import "global/settings";
 @import "d3/treemap";
 @import "d3/streamgraph";
 @import "components/layout";
+@import "components/legend";
+@import "components/tabs";
 @import "global/util";
 @import "trumps/grid";

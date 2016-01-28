@@ -124,17 +124,20 @@ function drawLegend()
     /*
      * Draw legend
      */
-    var legendRows = d3.select("#colorLegendDiv").select("table")
-        .selectAll("tr")
+    var legendRows = d3.select("#colorLegendDiv")
+        .selectAll("span")
+        .attr("class", "legend__item")
         .data(layers0)
         .enter()
-        .append("tr");
-    legendRows.append("td")
-        .attr("class", "legendSample")
-        .attr("bgcolor", function(d) {
-            return d[0].c;
+        .append("span")
+        .attr("class", "legend__item")
+    legendRows.append("span")
+        .attr("class", "legend__color")
+        .attr("style", function(d) {
+            return "background-color:" + d[0].c + ";";
         });
-    legendRows.append("td")
+    legendRows.append("span")
+        .attr("class", "legend__name")
         .append("text")
         .text(function(d) {
             return d[0].name;
