@@ -7,6 +7,12 @@
   width: 15pt;
 }
 
+.streamGraphSlider {
+  stroke: black;
+  stroke-width: 3;
+  stroke-dasharray: (6, 3)
+}
+
 #streamGraphDiv svg {
   display: block;
   margin-left: auto;

@@ -4,15 +4,20 @@
 
 var layers0, layers1, area;
 
+var streamGraphWidth = $("#streamGraphDiv").width() - getScrollbarWidth();
+var streamGraphHeight = getHeight();
+var xSliderScale = d3.scale.linear()
+    .domain([0, yearValues.length - 1])
+    .range([1.5, streamGraphWidth - 1.5]);
+
 function drawStreamGraph()
 {
     var stack = d3.layout.stack().offset("wiggle");
     layers0 = stack(multipleTimeSeries);
     layers1 = stack(multipleTimeSeries);
 
-    var width = $("#streamGraphDiv").width() - getScrollbarWidth(),
-        height = getHeight();
-
+    var width = streamGraphWidth,
+        height = streamGraphHeight;
 
     /*
      * Define scales
@@ -62,7 +67,7 @@ function drawStreamGraph()
     /*
      * Add in-graph labels
      */
-    var labels = canvas.selectAll("text")
+    canvas.selectAll("text")
         .data(layers0)
         .enter()
         .append("text");
@@ -117,6 +122,74 @@ function drawStreamGraph()
             });
             return txt;
         });
+
+    canvas.append("line")
+        .attr("x1", xSliderScale(yearsScale(state.year)))
+        .attr("y1", 0)
+        .attr("x2", xSliderScale(yearsScale(state.year)))
+        .attr("y2", height)
+        .attr("class", "streamGraphSlider")
+        .attr("id", "streamGraphSlider")
+        .on("mousedown", sliderMouseDown);
+    d3.select(window)
+        .on("mouseup", mouseUp);
+    canvas
+        .on("mousemove", canvasMouseMove)
+        .on("mousedown", canvasMouseDown);
+}
+
+function sliderMouseDown()
+{
+    state.sliderMouseDown = true;
+}
+
+function mouseUp()
+{
+    state.sliderMouseDown = false;
+}
+
+function canvasMouseMove()
+{
+    if (state.sliderMouseDown)
+    {
+        var X = d3.mouse(this);
+        var xa = Math.round(X[0] * (yearValues.length - 1)/streamGraphWidth);
+        xa = Math.max(0, xa);
+        xa = Math.min(yearValues.length - 1, xa);
+        var slider = d3.select("#streamGraphSlider");
+        slider
+            .attr("x1", xSliderScale(xa))
+            .attr("x2", xSliderScale(xa));
+    }
+
+    /*
+     * Change cursor appearance with respect to slider
+     */
+    if (mouseAtSlider(this)) {
+        d3.select("body")
+            .style("cursor", "pointer");
+    }
+    else
+    {
+        d3.select("body")
+            .style("cursor", "default");
+    }
+}
+
+function mouseAtSlider(parentObject)
+{
+    var result = false;
+    var XMouse = d3.mouse(parentObject);
+    var xSlider = d3.select("#streamGraphSlider").attr("x1");
+    if (Math.abs(XMouse[0] - xSlider) < 20)
+        result = true;
+    return result;
+}
+
+function canvasMouseDown()
+{
+    if (mouseAtSlider(this))
+        sliderMouseDown();
 }
 
 function drawLegend()
@@ -161,51 +234,11 @@ function transition() {
  */
 //    var color = d3.scale.linear()
 //            .range(["#c30", "#ea8"]);
-var color = d3.scale.category20();
 
 /*
  * Make data arrays
  */
-var yearValues = ["2013", "2014", "2015", "2016"];
-var ministryValues = [
-    "A: Infrastructuurfonds",
-    "B: Gemeentefonds",
-    "C: Provinciefonds",
-    "F: Diergezondheidsfonds",
-    "H: BES-fonds",
-    "I: De Koning",
-    "IIa: De Staten Generaal",
-    "IIb: Overige Hoge Colleges van Staat",
-    "III: Algemene Zaken",
-    "IV: Koninkrijksrelaties",
-    "IXa: Nationale Schuld",
-    "IXb: Financiën",
-    //"Rijk",
-    "J: Deltafonds",
-    "V: Buitenlandse Zaken",
-    "VI: Veiligheid en Justitie",
-    "VII: Binnenlandse Zaken en Koninkrijksrelaties",
-    "VIII: Onderwijs: Cultuur en Wetenschap",
-    "X: Defensie",
-    "XII: Infrastructuur en Milieu",
-    "XIII: Economische Zaken",
-    "XV: Sociale Zaken en Werkgelegenheid",
-    "XVI: Volksgezondheid: Welzijn en Sport",
-    "XVII: Buitenlandse Handel & Ontwikkelingssamenwerking",
-    "XVIII: Wonen en Rijksdienst"
-];
-var sideValues = ["O", "U", "V"];
-var sideSigns = [-1, 1, 1];
-console.log(yearValues[0]);
-var yearsScale = d3.scale.linear()
-    .domain(yearValues)
-    .range(d3.range(0, yearValues.length - 1, 1));
-var ministriesScale = d3.scale.ordinal()
-    .domain(ministryValues)
-    .range(d3.range(0, ministryValues.length - 1, 1));
-var sidesScale = d3.scale.ordinal()
-    .domain(sideValues)
-    .range(sideSigns);
+
 
 var multipleTimeSeries = [];
 for (var i = 0; i < ministryValues.length; i++)
