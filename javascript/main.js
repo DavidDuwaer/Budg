@@ -6,8 +6,9 @@ var color = d3.scale.category20();
 
 var state =
 {
-    year: 2016,
-    ministryHighlighted: null
+    year: "2016",
+    ministryHighlighted: null,
+    sliderMouseDown: false
 };
 
 /*

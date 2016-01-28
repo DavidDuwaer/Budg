@@ -4,14 +4,20 @@
 
 var layers0, layers1, area;
 
+var streamGraphWidth = getWidth();
+var streamGraphHeight = 500;
+var xSliderScale = d3.scale.linear()
+    .domain([0, yearValues.length - 1])
+    .range([1.5, streamGraphWidth - 1.5]);
+
 function drawStreamGraph()
 {
     var stack = d3.layout.stack().offset("wiggle");
     layers0 = stack(multipleTimeSeries);
     layers1 = stack(multipleTimeSeries);
 
-    var width = getWidth(),
-        height = 500;
+    var width = streamGraphWidth,
+        height = streamGraphHeight;
 
     /*
      * Define scales
@@ -116,6 +122,74 @@ function drawStreamGraph()
             });
             return txt;
         });
+
+    canvas.append("line")
+        .attr("x1", xSliderScale(yearsScale(state.year)))
+        .attr("y1", 0)
+        .attr("x2", xSliderScale(yearsScale(state.year)))
+        .attr("y2", height)
+        .attr("class", "streamGraphSlider")
+        .attr("id", "streamGraphSlider")
+        .on("mousedown", sliderMouseDown);
+    d3.select(window)
+        .on("mouseup", mouseUp);
+    canvas
+        .on("mousemove", canvasMouseMove)
+        .on("mousedown", canvasMouseDown);
+}
+
+function sliderMouseDown()
+{
+    state.sliderMouseDown = true;
+}
+
+function mouseUp()
+{
+    state.sliderMouseDown = false;
+}
+
+function canvasMouseMove()
+{
+    if (state.sliderMouseDown)
+    {
+        var X = d3.mouse(this);
+        var xa = Math.round(X[0] * (yearValues.length - 1)/streamGraphWidth);
+        xa = Math.max(0, xa);
+        xa = Math.min(yearValues.length - 1, xa);
+        var slider = d3.select("#streamGraphSlider");
+        slider
+            .attr("x1", xSliderScale(xa))
+            .attr("x2", xSliderScale(xa));
+    }
+
+    /*
+     * Change cursor appearance with respect to slider
+     */
+    if (mouseAtSlider(this)) {
+        d3.select("body")
+            .style("cursor", "pointer");
+    }
+    else
+    {
+        d3.select("body")
+            .style("cursor", "default");
+    }
+}
+
+function mouseAtSlider(parentObject)
+{
+    var result = false;
+    var XMouse = d3.mouse(parentObject);
+    var xSlider = d3.select("#streamGraphSlider").attr("x1");
+    if (Math.abs(XMouse[0] - xSlider) < 20)
+        result = true;
+    return result;
+}
+
+function canvasMouseDown()
+{
+    if (mouseAtSlider(this))
+        sliderMouseDown();
 }
 
 function drawLegend()
