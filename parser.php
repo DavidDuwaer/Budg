@@ -20,7 +20,7 @@ function cleanAndConvert($dataStrings) {
     $table = [];
     foreach ($dataStrings as $dataString) {
         if ($dataString == "") continue;
-        $row = explode(",", $dataString);
+        $row = explode(";", $dataString);
         if (strtoupper($row[6]) == "TOTAAL" || strtoupper($row[4]) == "RIJK") continue;
 
         $data = [
