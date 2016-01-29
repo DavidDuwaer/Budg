@@ -86,5 +86,5 @@ function wrap($tree) {
 $csv = readCSV();
 $data = cleanAndConvert($csv);
 $tree = convertToTree($data);
-$output = wrap(makeD3Readable($tree));
-echo(json_encode($output, JSON_UNESCAPED_UNICODE));
+//$output = wrap(makeD3Readable($tree));
+echo(json_encode($tree, JSON_UNESCAPED_UNICODE));
