@@ -108,3 +108,25 @@ function changeView(view) {
     }
     state.notify("changeview")
 }
+
+function updateBreadcrumbs(d) {
+    var breadcrumbs = getBreadcrumbs(d);
+    setHeader(breadcrumbs)
+}
+
+function setHeader(name) {
+    $(".js-breadcrumbs").html(name)
+}
+
+function setHeaderColor(color) {
+    if (state.rainbow) {
+        $(".js-breadcrumbs").css("background-color", color)
+    }
+}
+
+function setRainbow(value) {
+    state.rainbow = value
+    if (!value) {
+        $(".js-breadcrumbs").removeAttr("style")
+    }
+}

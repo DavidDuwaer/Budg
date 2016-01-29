@@ -61,8 +61,8 @@ function visualize(data) {
             })
             .on("mouseenter", function(d) {
                 updateBreadcrumbs(d)
-
-
+                var color = $(this).find("rect").css("fill")
+                setHeaderColor(color)
             })
             .on("mouseout", function(d) {
                 $(".legend__name").removeAttr("style")
@@ -82,6 +82,7 @@ function visualize(data) {
         .attr("dy", ".35em")
         .attr("text-anchor", "middle")
         .text(function(d) { return d.name; })
+        .style("fill", "white")
         .style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
 
     d3.select(window).on("click", function() {
@@ -108,15 +109,6 @@ function size(d) {
 
 function count(d) {
     return 1;
-}
-
-function updateBreadcrumbs(d) {
-    var breadcrumbs = getBreadcrumbs(d);
-    setHeader(breadcrumbs)
-}
-
-function setHeader(name) {
-    $(".js-breadcrumbs").html(name)
 }
 
 function zoom(d, child) {

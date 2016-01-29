@@ -10,11 +10,12 @@ var state = {
     year: 2016,
     minimum: +api.getYearValues()[0],
     ministryHighlighted: null,
+    rainbow: $("input[name='rainbow'][value='on']").is(':checked'),
 
     /*
      * U, V, and O signs respectively (-1, 0 or 1)
      */
-    budgetScale: {"U": 1, "V": 1, "O": 1},
+    budgetScale: {"U": 1, "V": 1, "O": 0},
     getSigns: function() {
         return [this.budgetScale["U"], this.budgetScale["V"], this.budgetScale["O"]]
     },

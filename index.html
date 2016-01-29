@@ -35,7 +35,12 @@
                         <label><input type="radio" name="view" onclick="changeView('u')"> Uitgaven</label>
                         <label><input type="radio" name="view" onclick="changeView('o')"> Ontvangsten</label>
                         <label><input type="radio" name="view" onclick="changeView('v')"> Verplichtingen</label>
-                        <label><input type="radio" name="view" onclick="changeView('uv')"> Uitgaven + Verplichtingen</label>
+                        <label><input type="radio" name="view" onclick="changeView('uv')" checked="checked"> Uitgaven + Verplichtingen</label>
+                    </fieldset>
+                    <fieldset class="fieldset">
+                        <legend>Regenboog balk</legend>
+                        <label><input type="radio" name="rainbow" value="on" onclick="setRainbow(true)"> Aan</label>
+                        <label><input type="radio" name="rainbow" value="of" onclick="setRainbow(false)" checked="checked"> Uit</label>
                     </fieldset>
                 </div>
             </div>
