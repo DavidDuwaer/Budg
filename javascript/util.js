@@ -90,3 +90,21 @@ function zoomOn(name) {
     markValueInTable(child)
     zoom(child.parent, child);
 }
+
+function changeView(view) {
+    switch(view) {
+        case "u":
+            state.budgetScale = {"U": 0, "V": 1, "O": 1}
+            break
+        case "v":
+            state.budgetScale = {"U": 0, "V": 1, "O": 0}
+            break
+        case "o":
+            state.budgetScale = {"U": 0, "V": 0, "O": 1}
+            break
+        case "uv":
+            state.budgetScale = {"U": 1, "V": 1, "O": 0}
+            break
+    }
+    state.notify()
+}

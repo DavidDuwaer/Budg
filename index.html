@@ -30,7 +30,13 @@
                     </div>
                 </div>
                 <div class="settings-view tab-view">
-
+                    <fieldset class="fieldset">
+                        <legend>Weergave</legend>
+                        <label><input type="radio" name="view" onclick="changeView('u')"> Uitgaven</label>
+                        <label><input type="radio" name="view" onclick="changeView('o')"> Ontvangsten</label>
+                        <label><input type="radio" name="view" onclick="changeView('v')"> Verplichtingen</label>
+                        <label><input type="radio" name="view" onclick="changeView('uv')"> Uitgaven + Verplichtingen</label>
+                    </fieldset>
                 </div>
             </div>
         </div>
