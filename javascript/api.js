@@ -68,7 +68,9 @@ function Api()
      *             }
      *         }
      */
-    this.getSpecificData = function(uvo){};
+    this.getSpecificData = function(uvo){
+
+    };
 
     /*
      * @param uvo  Array of format: {U: <int>, V: <int>, O: <int>}, with each <int> being -1, 0 or 1, specifying the
@@ -80,19 +82,33 @@ function Api()
      *             {<department>:<amount>}
      *         }
      */
-    this.getSpecificDataForYear = function(uvo, year){};
+    this.getSpecificDataForYear = function(uvo, year){
+        var data = getData()
+        var output = {}
+        for (var typeKey in data[year]) { // 2013-2015 --> OUV
+            for (var ministryKey in data[year][typeKey]) { // OUV --> ministry
+                if (!output.hasOwnProperty(ministryKey)) output[ministryKey] = {}
+                for (var departmentKey in data[year][typeKey][ministryKey]) { // ministry --> department
+                    if (!output[ministryKey].hasOwnProperty(departmentKey)) output[ministryKey][departmentKey] = 0
+                    output[ministryKey][departmentKey] += data[year][typeKey][ministryKey][departmentKey] * uvo[typeKey]
+                }
+            }
+        }
+        console.log(output)
+        return wrapTree("Begroting", JSONtoD3Tree(output))
+    };
 
     function JSONtoD3Tree(tree, name) {
         var d3Tree = []
         for (var key in tree) {
             var value = tree[key]
-            if (Array.isArray(value)) {
-                var object = []
+            if (typeof value === 'object') {
+                var object = {}
                 object['name'] = key
                 object['children'] = JSONtoD3Tree(value)
                 d3Tree.push(object)
             } else {
-                var leaf = []
+                var leaf = {}
                 leaf['name'] = key
                 leaf['size'] = value
                 d3Tree.push(leaf)
