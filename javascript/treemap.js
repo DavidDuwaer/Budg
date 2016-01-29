@@ -56,10 +56,13 @@ function visualize(data) {
             .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
             .on("click", function(d) { return zoom(node == d.parent ? root : d.parent, d); })
             .on("mouseover", function(d) {
-                updateBreadcrumbs(d)
-                markValueInTable(d)
                 d3.select(this)
                     .style("opacity", "0.8")
+            })
+            .on("mouseenter", function(d) {
+                updateBreadcrumbs(d)
+                markValueInTable(d)
+
             })
             .on("mouseout", function(d) {
                 d3.select(this)
@@ -80,7 +83,15 @@ function visualize(data) {
         .text(function(d) { return d.name; })
         .style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
 
-    d3.select(window).on("click", function() { zoom(root); });
+    d3.select(window).on("click", function() {
+        var clickOnLegend = d3.event.target.parentNode.className.indexOf("legend") != -1
+        if (clickOnLegend) {
+            var text = $(d3.event.target.parentNode).find("text").html()
+            zoomOn(text)
+        } else {
+            zoom(root);
+        }
+    });
 
     d3.select("select").on("change", function() {
         treemap.value(this.value == "size" ? size : count).nodes(root);
@@ -108,10 +119,6 @@ function setHeader(name) {
 }
 
 function zoom(d, child) {
-    console.log("d")
-    console.log(d)
-    console.log("child")
-    console.log(child)
     if (d == root) {
         setHeader(d.name);
     } else {

@@ -79,17 +79,14 @@ function findAssocNode(name) {
     for (var key in root["children"]) {
         if (name == root["children"][key]["name"]) {
             var node = root["children"][key]["children"][0]
+            node["propagate"] = false
             return node
         }
     }
 }
 
-$(document).ready(function() {
-    $(".legend__item").click(function(e) {
-        var child = findAssocNode(e.target.innerHTML)
-        zoom(child.parent, child)
-    })
-
-    // Should work, but it automatically zooms out at the same moment,
-    // because D3 has an even listener, which needs to stop listening or something.
-})
+function zoomOn(name) {
+    var child = findAssocNode(name);
+    markValueInTable(child)
+    zoom(child.parent, child);
+}

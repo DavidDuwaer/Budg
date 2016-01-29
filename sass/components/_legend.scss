@@ -3,6 +3,7 @@ $legend-font-size: 1rem;
 .legend__item {
   display: block;
   transition: all 0.3s;
+  cursor: pointer;
 }
 
 .legend__color {
