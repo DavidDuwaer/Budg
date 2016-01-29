@@ -117,6 +117,9 @@ function StreamGraph()
                 setHeaderColor(getColor(d[0].name))
                 setHeader(d[0].name)
             })
+            .on("click", function(d) {
+                zoomOn(d[0].name)
+            })
 
         /*
          * Add tooltips
