@@ -21,7 +21,9 @@ function cleanAndConvert($dataStrings) {
     foreach ($dataStrings as $dataString) {
         if ($dataString == "") continue;
         $row = explode(";", $dataString);
-        if (strtoupper($row[6]) == "TOTAAL" || strtoupper($row[4]) == "RIJK") continue;
+        if (strtoupper($row[6]) == "TOTAAL" ||
+            strtoupper($row[4]) == "RIJK" ||
+            intval($row[7]) < 0) continue;
 
         $data = [
             'year'          => $row[0],                     // Begrotingsjaar

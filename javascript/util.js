@@ -21,7 +21,7 @@ function getHeight() {
 }
 
 function JSONtoD3Tree(json, name) {
-    wrapTree(JSONtoD3TreeRecur(json), name)
+    return wrapTree(name, JSONtoD3TreeRecur(json))
 }
 
 function JSONtoD3TreeRecur(tree) {
