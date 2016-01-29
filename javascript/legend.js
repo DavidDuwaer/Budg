@@ -7,7 +7,7 @@ function Legend()
     var data = api.getMinistryValues();
     console.log(data);
     var ministries = new Array();
-    $.each(data, function(ministryName, ministryChildren)
+    $.each(data, function(i, ministryName)
     {
         ministries.push(ministryName);
     });
