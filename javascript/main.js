@@ -4,14 +4,15 @@
  | Main file.
  -------------------------------------------------------------------------*/
 
+var yearValues = getYearValues();
 
-var color = d3.scale.category20();
+var color = d3.scale.category20b();
 
 var state = {
     year: 2016,
-    minimum: 2013,
+    minimum: +yearValues[0],
     ministryHighlighted: null,
-    budgetScale: {"U": 1, "V": 1, "O": -1},
+    budgetScale: {"U": 1, "V": 1, "O": 1},
     getSigns: function() {
         return [this.budgetScale["U"], this.budgetScale["V"], this.budgetScale["O"]]
     },
@@ -20,14 +21,14 @@ var state = {
     subscribe: function(callback) {
         this.subscribers.push(callback)
     },
-    notify: function() {
+    notify: function(source) {
         for (var sub in this.subscribers) {
-            this.subscribers[sub](this)
+            this.subscribers[sub](this, source)
         }
     }
 };
 
-var yearValues = getYearValues();
+
 var ministryValues = getMinistryValues();
 var sideValues = getBudgetTypes();
 var sideSigns = state.getSigns();
