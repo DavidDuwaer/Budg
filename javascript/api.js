@@ -82,20 +82,38 @@ function selectYear(json, selectedYear) {
     return null;
 }
 
+function selectByName(d3tree, name) {
+    for (var object in d3tree) {
+        if (object["name"] == name) {
+            return name["children"];
+        }
+    }
+
+    return undefined;
+}
+
 function setOUV(json, scale) {
-    var U = json["children"][0]
-    var V = json["children"][1]
-    var O = json["children"][2]
-    for (var key in O["children"]) {
-        for (var subkey in O["children"][key]["children"]) {
-            O["children"][key]["children"][subkey]["size"] = O["children"][key]["children"][subkey]["size"] * scale["O"]
+    var types = {}
+    for(var type in json["children"]) {
+        var name = json["children"][type]["name"]
+        var children = json["children"][type]["children"]
+        types[name] = children
+    }
+    var U = types["U"]
+    var V = types["V"]
+    var O = types["O"]
+    for (var key in O) {
+        var name = O[key]["name"]
+        for (var subkey in selectByName(O, name)) {
+            O[key]["children"][subkey]["size"] = O[key]["children"][subkey]["size"] * scale["O"]
             try {
-                O["children"][key]["children"][subkey]["size"] += V["children"][key]["children"][subkey]["size"] * scale["V"]
+                O[key]["children"][subkey]["size"] += V[key]["children"][subkey]["size"] * scale["V"]
             } catch(e) {}
             try {
-                O["children"][key]["children"][subkey]["size"] += U["children"][key]["children"][subkey]["size"] * scale["U"]
+                O[key]["children"][subkey]["size"] += U[key]["children"][subkey]["size"] * scale["U"]
             } catch(e) {}
         }
     }
-    return JSON.parse(JSON.stringify(O));
+    var wrap = {"name": "Begroting", "children": O}
+    return JSON.parse(JSON.stringify(wrap));
 }
