@@ -65,14 +65,24 @@ function getScrollbarWidth() {
     return widthNoScroll - widthWithScroll;
 }
 
-function markValueInTable(d) {
+function markValueInTable(name) {
     $(".legend__name").removeAttr("style")
     $(".legend__name text").each(function(i, e) {
-        if (e.innerHTML == d.parent.name) {
+        if (e.innerHTML == name) {
             var container = $(e).parent().parent().find(".legend__name")
             container.css("background-color", "#E7BA52")
         }
     })
+}
+
+function getColor(name) {
+    var texts = $(".legend__name text")
+    for (var i in $(".legend__name text")) {
+        if (texts[i].innerHTML == name) {
+            return $(texts[i]).parent().parent().find(".legend__color").css("background-color");
+        }
+    }
+    return false
 }
 
 function findAssocNode(name) {
@@ -87,7 +97,8 @@ function findAssocNode(name) {
 
 function zoomOn(name) {
     var child = findAssocNode(name);
-    markValueInTable(child)
+    console.log(child.parent.name)
+    markValueInTable(child.parent.name)
     zoom(child.parent, child);
 }
 

@@ -109,7 +109,14 @@ function StreamGraph()
                 //console.log(colorService.ministry(d[0].name));
                 //console.log(d[0].name);
                 return color(d[0].name);
-            });
+            })
+
+        canvas.selectAll("path")
+            .on("mouseover", function(d) {
+                markValueInTable(d[0].name)
+                setHeaderColor(getColor(d[0].name))
+                setHeader(d[0].name)
+            })
 
         /*
          * Add tooltips
@@ -175,17 +182,6 @@ function StreamGraph()
                 });
                 return txt;
             });
-
-        /*
-         * Add invisible covering layer so that label text can't be selected
-         */
-        canvas.append("rect")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", width)
-            .attr("height", height)
-            .style("opacity", "0")
-            .style("cursor", "inherit");
 
         /*
          * Add slider
