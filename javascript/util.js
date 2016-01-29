@@ -66,10 +66,10 @@ function getScrollbarWidth() {
 }
 
 function markValueInTable(d) {
+    $(".legend__name").removeAttr("style")
     $(".legend__name text").each(function(i, e) {
         if (e.innerHTML == d.parent.name) {
-            var container = $(e).parent().parent()
-            $(".legend__item").css("background-color", "transparent")
+            var container = $(e).parent().parent().find(".legend__name")
             container.css("background-color", "#E7BA52")
         }
     })

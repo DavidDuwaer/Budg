@@ -83,6 +83,9 @@ function StreamGraph()
             .attr("width", width)
             .attr("height", height);
 
+        d3.select("#streamGraphDiv").append("div")
+            .attr("class", "year-label")
+
         /*
          * Draw stream graph into canvas
          */
@@ -378,5 +381,13 @@ function StreamGraph()
         //drawLegend();
     //});
 };
+
+$(document).ready(function() {
+    $(".year-label").html(state.year)
+    state.subscribe(function(state) {
+        $(".year-label").html(state.year)
+    })
+})
+
 
 streamGraph = new StreamGraph();

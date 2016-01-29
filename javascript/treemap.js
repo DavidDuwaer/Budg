@@ -55,15 +55,17 @@ function visualize(data) {
             .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
             .on("click", function(d) { return zoom(node == d.parent ? root : d.parent, d); })
             .on("mouseover", function(d) {
+                markValueInTable(d)
                 d3.select(this)
                     .style("opacity", "0.8")
             })
             .on("mouseenter", function(d) {
                 updateBreadcrumbs(d)
-                markValueInTable(d)
+
 
             })
             .on("mouseout", function(d) {
+                $(".legend__name").removeAttr("style")
                 d3.select(this)
                     .style("opacity", "1")
             });
