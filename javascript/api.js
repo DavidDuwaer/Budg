@@ -62,7 +62,7 @@ function getMinistryValues() {
 
 // TODO: make generic
 function getBudgetTypes() {
-    return ["O", "U", "V"];
+    return ["U", "V", "O"];
 }
 
 /*
@@ -117,3 +117,48 @@ function setOUV(json, scale) {
     var wrap = {"name": "Begroting", "children": O}
     return JSON.parse(JSON.stringify(wrap));
 }
+
+
+
+
+function Api()
+{
+    /*
+     * @return Data object of format
+     *         {<ministry>:
+     *             {<department>:
+     *                 {<year>:
+     *                     {<o,u or v>: <amount>}
+     *                 }
+     *             }
+     *         }
+     */
+    this.getRawData = function(){};
+
+    /*
+     * @param uvo Array of format: {U: <int>, V: <int>, O: <int>}, with each <int> being -1, 0 or 1, specifying the
+     *            sign in which the budget component contributes in the returned data object
+     *
+     * @return Data object of format
+     *         {<ministry>:
+     *             {<department>:
+     *                 {<year>: <amount>}
+     *             }
+     *         }
+     */
+    this.getSpecificData = function(uvo){};
+
+    /*
+     * @param uvo  Array of format: {U: <int>, V: <int>, O: <int>}, with each <int> being -1, 0 or 1, specifying the
+     *             sign in which the budget component contributes in the returned data object
+     * @param year An integer (!, no string) containing the year on which the return data object is focussed
+     *
+     * @return Data object of format
+     *         {<ministry>:
+     *             {<department>:<amount>}
+     *         }
+     */
+    this.getSpecificDataForYear = function(uvo, year){};
+}
+
+api = new Api();
