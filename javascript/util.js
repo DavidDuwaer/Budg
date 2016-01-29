@@ -64,3 +64,32 @@ function getScrollbarWidth() {
 
     return widthNoScroll - widthWithScroll;
 }
+
+function markValueInTable(d) {
+    $(".legend__name text").each(function(i, e) {
+        if (e.innerHTML == d.parent.name) {
+            var container = $(e).parent().parent()
+            $(".legend__item").css("background-color", "transparent")
+            container.css("background-color", "#E7BA52")
+        }
+    })
+}
+
+function findAssocNode(name) {
+    for (var key in root["children"]) {
+        if (name == root["children"][key]["name"]) {
+            var node = root["children"][key]["children"][0]
+            return node
+        }
+    }
+}
+
+$(document).ready(function() {
+    $(".legend__item").click(function(e) {
+        var child = findAssocNode(e.target.innerHTML)
+        zoom(child.parent, child)
+    })
+
+    // Should work, but it automatically zooms out at the same moment,
+    // because D3 has an even listener, which needs to stop listening or something.
+})

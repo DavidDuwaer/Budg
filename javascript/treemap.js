@@ -57,6 +57,7 @@ function visualize(data) {
             .on("click", function(d) { return zoom(node == d.parent ? root : d.parent, d); })
             .on("mouseover", function(d) {
                 updateBreadcrumbs(d)
+                markValueInTable(d)
                 d3.select(this)
                     .style("opacity", "0.8")
             })
@@ -107,6 +108,10 @@ function setHeader(name) {
 }
 
 function zoom(d, child) {
+    console.log("d")
+    console.log(d)
+    console.log("child")
+    console.log(child)
     if (d == root) {
         setHeader(d.name);
     } else {
@@ -117,7 +122,7 @@ function zoom(d, child) {
     y.domain([d.y, d.y + d.dy]);
 
     var t = svg.selectAll("g.cell").transition()
-        .duration(d3.event.altKey ? 7500 : 750)
+        .duration(750)
         .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
 
     t.select("rect")
@@ -130,6 +135,8 @@ function zoom(d, child) {
         .style("opacity", function(d) { return kx * d.dx > d.w ? 1 : 0; });
 
     node = d;
-    d3.event.stopPropagation();
+    try {
+        d3.event.stopPropagation();
+    } catch(e){}
 
 }
