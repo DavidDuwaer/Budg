@@ -56,5 +56,3 @@ var ministriesScale = d3.scale.ordinal()
 //var sidesScale = d3.scale.ordinal()
 //    .domain(sideValues)
 //    .range(sideSigns);
-
-var color = d3.scale.category20b();
