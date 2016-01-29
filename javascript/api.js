@@ -24,7 +24,12 @@ function Api()
         return json;
     }
 
-    function getYearValues() {
+    /**
+     * Get the year values
+     * @returns {Array} Array of integers representing all the years
+     * covered in the dataset
+     */
+    this.getYearValues = function() {
         var data = getData()
         var values = []
         for (var year in data) {
@@ -33,7 +38,12 @@ function Api()
         return values
     }
 
-    function getMinistryValues() {
+    /**
+     * Get the ministry values
+     * @returns {Array} Array of strings with all ministry names
+     * covered in the dataset
+     */
+    this.getMinistryValues = function() {
         var data = getData()["2013"]["O"]
         var values = []
         for (var ministry in data) {
