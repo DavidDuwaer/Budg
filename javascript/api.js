@@ -25,6 +25,30 @@ function getData() {
     return json;
 }
 
+function JSONtoD3Tree(tree, name) {
+    var d3Tree = []
+    for (var key in tree) {
+        var value = tree[key]
+        if (Array.isArray(value)) {
+            var object = []
+            object['name'] = key
+            object['children'] = JSONtoD3Tree(value)
+            d3Tree.push(object)
+        } else {
+            var leaf = []
+            leaf['name'] = key
+            leaf['size'] = value
+            d3Tree.push(leaf)
+        }
+    }
+
+    return JSON.parse(JSON.stringify(d3Tree))
+}
+
+function wrapTree(name, tree) {
+    return {"name": name, "children": tree}
+}
+
 // TODO: make generic
 function getYearValues() {
     return ["2013", "2014", "2015", "2016"];
@@ -85,7 +109,7 @@ function selectYear(json, selectedYear) {
 function selectByName(d3tree, name) {
     for (var object in d3tree) {
         if (object["name"] == name) {
-            return name["children"];
+            return object;
         }
     }
 
@@ -104,14 +128,12 @@ function setOUV(json, scale) {
     var O = types["O"]
     for (var key in O) {
         var name = O[key]["name"]
-        for (var subkey in selectByName(O, name)) {
-            O[key]["children"][subkey]["size"] = O[key]["children"][subkey]["size"] * scale["O"]
-            try {
-                O[key]["children"][subkey]["size"] += V[key]["children"][subkey]["size"] * scale["V"]
-            } catch(e) {}
-            try {
-                O[key]["children"][subkey]["size"] += U[key]["children"][subkey]["size"] * scale["U"]
-            } catch(e) {}
+        for (var subkey in O[key]["children"]) {
+            var subname = O[key]["children"][subkey]["name"]
+
+            O[key]["children"][subkey]["size"] *= scale["O"]
+            O[key]["children"][subkey]["size"] += selectByName(selectByName(V, name)["children"], subname)["size"] * scale["V"]
+            O[key]["children"][subkey]["size"] += selectByName(selectByName(U, name)["children"], subname)["size"] * scale["U"]
         }
     }
     var wrap = {"name": "Begroting", "children": O}

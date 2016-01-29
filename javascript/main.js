@@ -12,7 +12,7 @@ var state = {
     year: 2016,
     minimum: +yearValues[0],
     ministryHighlighted: null,
-    budgetScale: {"U": 1, "V": 1, "O": -1},
+    budgetScale: {"U": 1, "V": 1, "O": 1},
     getSigns: function() {
         return [this.budgetScale["U"], this.budgetScale["V"], this.budgetScale["O"]]
     },
