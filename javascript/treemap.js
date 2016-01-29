@@ -17,9 +17,10 @@ var w = $("#canvas").width() - getScrollbarWidth(),
     tooltip;
 
 // Select years
-visualize(setOUV(selectYear(getData(), 2013), state.budgetScale));
+console.log(JSONtoD3Tree(api.getSpecificDataForYear(state.budgetScale, state.year), "Begroting"))
+visualize(JSONtoD3Tree(api.getSpecificDataForYear(state.budgetScale, state.year), "Begroting"))
 state.subscribe(function(state) {
-    visualize(setOUV(selectYear(getData(), state.year), state.budgetScale));
+    visualize(JSONtoD3Tree(api.getSpecificDataForYear(state.budgetScale, state.year), "Begroting"));
 })
 
 function visualize(data) {
