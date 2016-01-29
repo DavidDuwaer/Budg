@@ -94,33 +94,8 @@ function Api()
                 }
             }
         }
-        console.log(output)
-        return wrapTree("Begroting", JSONtoD3Tree(output))
+        return data;
     };
-
-    function JSONtoD3Tree(tree, name) {
-        var d3Tree = []
-        for (var key in tree) {
-            var value = tree[key]
-            if (typeof value === 'object') {
-                var object = {}
-                object['name'] = key
-                object['children'] = JSONtoD3Tree(value)
-                d3Tree.push(object)
-            } else {
-                var leaf = {}
-                leaf['name'] = key
-                leaf['size'] = value
-                d3Tree.push(leaf)
-            }
-        }
-
-        return JSON.parse(JSON.stringify(d3Tree))
-    }
-
-    function wrapTree(name, tree) {
-        return {"name": name, "children": tree}
-    }
 }
 
 api = new Api();

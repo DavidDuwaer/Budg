@@ -20,6 +20,34 @@ function getHeight() {
     return $(window).height() - $(".js-breadcrumbs").outerHeight() - 20;
 }
 
+function JSONtoD3Tree(json, name) {
+    wrapTree(JSONtoD3TreeRecur(json), name)
+}
+
+function JSONtoD3TreeRecur(tree) {
+    var d3Tree = []
+    for (var key in tree) {
+        var value = tree[key]
+        if (typeof value === 'object') {
+            var object = {}
+            object['name'] = key
+            object['children'] = JSONtoD3Tree(value)
+            d3Tree.push(object)
+        } else {
+            var leaf = {}
+            leaf['name'] = key
+            leaf['size'] = value
+            d3Tree.push(leaf)
+        }
+    }
+
+    return JSON.parse(JSON.stringify(d3Tree))
+}
+
+function wrapTree(name, tree) {
+    return {"name": name, "children": tree}
+}
+
 function getScrollbarWidth() {
     var outer = document.createElement("div");
     outer.style.visibility = "hidden";
