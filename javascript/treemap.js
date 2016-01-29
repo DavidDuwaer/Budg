@@ -16,9 +16,8 @@ var w = $("#canvas").width() - getScrollbarWidth(),
     svg,
     tooltip;
 
-// Select years
-console.log(JSONtoD3Tree(api.getSpecificDataForYear(state.budgetScale, state.year), "Begroting"))
-visualize(JSONtoD3Tree(api.getSpecificDataForYear(state.budgetScale, state.year), "Begroting"))
+visualize(JSONtoD3Tree(api.getSpecificDataForYear(state.budgetScale, state.year), "Begroting"));
+
 state.subscribe(function(state) {
     visualize(JSONtoD3Tree(api.getSpecificDataForYear(state.budgetScale, state.year), "Begroting"));
 })
@@ -89,6 +88,8 @@ function visualize(data) {
 }
 
 function size(d) {
+    console.log(d)
+    console.log(d.size)
     return d.size;
 }
 

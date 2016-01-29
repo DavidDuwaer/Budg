@@ -21,7 +21,7 @@ function getHeight() {
 }
 
 function JSONtoD3Tree(json, name) {
-    return wrapTree(name, JSONtoD3TreeRecur(json))
+    return JSON.parse(JSON.stringify(wrapTree(name, JSONtoD3TreeRecur(json))))
 }
 
 function JSONtoD3TreeRecur(tree) {
@@ -29,23 +29,17 @@ function JSONtoD3TreeRecur(tree) {
     for (var key in tree) {
         var value = tree[key]
         if (typeof value === 'object') {
-            var object = {}
-            object['name'] = key
-            object['children'] = JSONtoD3Tree(value)
-            d3Tree.push(object)
+            d3Tree.push({"name": key, "children": JSONtoD3TreeRecur(value)})
         } else {
-            var leaf = {}
-            leaf['name'] = key
-            leaf['size'] = value
-            d3Tree.push(leaf)
+            d3Tree.push({"name": key, "size": value})
         }
     }
 
-    return JSON.parse(JSON.stringify(d3Tree))
+    return d3Tree
 }
 
 function wrapTree(name, tree) {
-    return {"name": name, "children": tree}
+    return {"name": name, "children": tree};
 }
 
 function getScrollbarWidth() {
