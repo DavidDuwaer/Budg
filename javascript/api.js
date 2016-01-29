@@ -69,7 +69,22 @@ function Api()
      *         }
      */
     this.getSpecificData = function(uvo){
+        var data = getData()
+        var output = {}
+        for (var yearKey in data) { // root --> 2013-2015
+            for (var typeKey in data[yearKey]) { // 2013-2015 --> OUV
+                for (var ministryKey in data[yearKey][typeKey]) { // OUV --> ministry
+                    if (!output.hasOwnProperty(ministryKey)) output[ministryKey] = {}
+                    for (var departmentKey in data[yearKey][typeKey][ministryKey]) { // ministry --> department
+                        if (!output[ministryKey].hasOwnProperty(departmentKey)) output[ministryKey][departmentKey] = {}
+                        if (!output[ministryKey][departmentKey].hasOwnProperty(yearKey)) output[ministryKey][departmentKey][yearKey] = 0
+                        output[ministryKey][departmentKey][yearKey] += data[yearKey][typeKey][ministryKey][departmentKey] * uvo[typeKey]
+                    }
+                }
+            }
+        }
 
+        return output
     };
 
     /*
