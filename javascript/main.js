@@ -57,12 +57,4 @@ var ministriesScale = d3.scale.ordinal()
 //    .domain(sideValues)
 //    .range(sideSigns);
 
-function ColorService()
-{
-    this.ministry = function(ministryName)
-    {
-        return d3.scale.category20b();
-    }
-}
-
-colorService = new ColorService();
+var color = d3.scale.category20b();

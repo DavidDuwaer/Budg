@@ -44,8 +44,8 @@ function Api()
      * covered in the dataset
      */
     this.getMinistryValues = function() {
-        var data = getData()["2013"]["O"]
-        var values = []
+        var data = getData()["2013"]["O"];
+        var values = [];
         for (var ministry in data) {
             values.push(ministry)
         }

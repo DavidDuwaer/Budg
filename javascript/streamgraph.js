@@ -90,7 +90,11 @@ function StreamGraph()
             .data(stackLayout)
             .enter().append("path")
             .attr("d", area)
-            .style("fill", function(d) { return d[0].c; });
+            .style("fill", function(d) {
+                //console.log(colorService.ministry(d[0].name));
+                //console.log(d[0].name);
+                return color(d[0].name);
+            });
 
         /*
          * Add tooltips
@@ -208,7 +212,7 @@ function StreamGraph()
         if (state.sliderMouseDown)
         {
             var X = d3.mouse(this);
-            var xa = Math.round(X[0] * (yearValues.length - 1)/streamGraphWidth);
+            var xa = Math.round(X[0] * (yearValues.length - 1)/width);
             xa = Math.max(0, xa);
             xa = Math.min(yearValues.length - 1, xa);
             var slider = d3.select("#streamGraphSlider");

@@ -24,7 +24,7 @@ function Legend()
         legendRows.append("span")
             .attr("class", "legend__color")
             .attr("style", function(d) {
-                return "background-color:" + colorService.ministry(d) + ";";
+                return "background-color:" + color(d) + ";";
             });
         legendRows.append("span")
             .attr("class", "legend__name")
