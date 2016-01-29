@@ -30,8 +30,8 @@ function Api()
      * covered in the dataset
      */
     this.getYearValues = function() {
-        var data = getData()
-        var values = []
+        var data = getData();
+        var values = [];
         for (var year in data) {
             values.push(year)
         }

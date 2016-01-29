@@ -2,14 +2,43 @@
  * Created by david on 27-1-2016.
  */
 
+function StreamGraph()
 {
-    var layers0, layers1, area;
+    var data = api.getSpecificData(state.budgetScale);
 
-    var streamGraphWidth = $("#streamGraphDiv").width() - getScrollbarWidth();
-    var streamGraphHeight = getHeight();
-    var xSliderScale = d3.scale.linear()
-        .domain([0, yearValues.length - 1])
-        .range([1.5, streamGraphWidth - 1.5]);
+    /*
+     * Create stack layers
+     */
+    var stackLayers = [];
+    var i = 0,
+        j,
+        yearValues = api.getYearValues();
+    $.each(data, function(ministry, departments)
+    {
+        stackLayers[i] = [];
+        $.each(yearValues, function(j, year)
+        {
+            j = parseInt(year) - yearValues[0];
+            stackLayers[i][j] = {
+                x: yearsScale(year),
+                y: 0,
+                name: ministry
+            };
+        });
+        $.each(departments, function(department, years)
+        {
+            $.each(years, function(year, amount)
+            {
+                j = parseInt(year) - yearValues[0];
+                stackLayers[i][j].y = stackLayers[i][j].y + amount;
+                j++;
+            });
+        });
+        i++;
+    });
+
+    var width = $("#streamGraphDiv").width() - getScrollbarWidth(),
+        height = getHeight();
 
     /*
      * The ministry to which the streamGraph is zoomed in. When null, the streamGraph is zoomed
@@ -17,57 +46,57 @@
      */
     var ministryZoomed = null;
 
-    function drawStreamGraph()
+    var stack = d3.layout.stack().offset("wiggle");
+    var stackLayout0 = stack(stackLayers);
+    var stackLayout1 = stack(stackLayers);
+
+    /*
+     * Define scales
+     */
+    var x = d3.scale.linear()
+        .domain([0, yearValues.length - 1])
+        .range([0, width]);
+    var xSliderScale = d3.scale.linear()
+        .domain([0, yearValues.length - 1])
+        .range([1.5, width - 1.5]);
+    var y = d3.scale.linear()
+        .domain([0, d3.max(stackLayers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); })])
+        .range([height, 0]);
+    var yReverse = d3.scale.linear()
+        .domain([0, d3.max(stackLayers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); })])
+        .range([0, height]);
+
+    /*
+     * Returns path attribute as a function of d
+     */
+    var area = d3.svg.area()
+        .x(function(d) { return x(d.x); })
+        .y0(function(d) { return y(d.y0); })
+        .y1(function(d) { return y(d.y0 + d.y); });
+
+    this.draw = function(stackLayout)
     {
-        var stack = d3.layout.stack().offset("wiggle");
-        layers0 = stack(multipleTimeSeries);
-        layers1 = stack(multipleTimeSeries);
-
-        var width = streamGraphWidth,
-            height = streamGraphHeight;
-
         /*
-         * Define scales
-         */
-        var x = d3.scale.linear()
-            .domain([0, yearValues.length - 1])
-            .range([0, width]);
-        var y = d3.scale.linear()
-            .domain([0, d3.max(layers0.concat(layers1), function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); })])
-            .range([height, 0]);
-        var yReverse = d3.scale.linear()
-            .domain([0, d3.max(layers0.concat(layers1), function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); })])
-            .range([0, height]);
-
-        /*
-         * Returns path attribute as a function of d
-         */
-        area = d3.svg.area()
-            .x(function(d) { return x(d.x); })
-            .y0(function(d) { return y(d.y0); })
-            .y1(function(d) { return y(d.y0 + d.y); });
-
-        /*
-         * Draw canvas
+         * Add canvas
          */
         var canvas = d3.select("#streamGraphDiv").append("svg")
             .attr("width", width)
             .attr("height", height);
 
         /*
-         * Draw stream graph
+         * Draw stream graph into canvas
          */
         canvas.selectAll("path")
-            .data(layers0)
+            .data(stackLayout)
             .enter().append("path")
             .attr("d", area)
             .style("fill", function(d) { return d[0].c; });
 
         /*
-         * Append tooltips
+         * Add tooltips
          */
         canvas.selectAll("path")
-            .data(layers0)
+            .data(stackLayout)
             .append("svg:title")
             .text(function(d) { return d[0].name; });
 
@@ -75,11 +104,11 @@
          * Add in-graph labels
          */
         canvas.selectAll("text")
-            .data(layers0)
+            .data(stackLayout)
             .enter()
             .append("text");
         canvas.selectAll("text")
-            .data(layers0)
+            .data(stackLayout)
             .attr("text-anchor", "middle")
             .attr("class", "streamGraphLabel")
             .attr("x", function(d) {
@@ -128,6 +157,9 @@
                 return txt;
             });
 
+        /*
+         * Add invisible covering layer so that label text can't be selected
+         */
         canvas.append("rect")
             .attr("x", 0)
             .attr("y", 0)
@@ -135,20 +167,31 @@
             .attr("height", height)
             .style("opacity", "0")
             .style("cursor", "inherit");
-        canvas.append("line")
+
+        /*
+         * Add slider
+         */
+        var slider = canvas.append("line")
             .attr("x1", xSliderScale(yearsScale(state.year)))
             .attr("y1", 0)
             .attr("x2", xSliderScale(yearsScale(state.year)))
             .attr("y2", height)
             .attr("class", "streamGraphSlider")
-            .attr("id", "streamGraphSlider")
+            .attr("id", "streamGraphSlider");
+
+        /*
+         * Add mouse behavior
+         */
+        canvas
+            .on("mousedown", canvasMouseDown)
+            .on("mousemove", canvasMouseMove);
+        slider
             .on("mousedown", sliderMouseDown);
         d3.select(window)
             .on("mouseup", mouseUp);
-        canvas
-            .on("mousemove", canvasMouseMove)
-            .on("mousedown", canvasMouseDown);
-    }
+    };
+
+    this.draw(stackLayout0);
 
     function sliderMouseDown()
     {
@@ -277,46 +320,59 @@
      * Make data arrays
      */
 
+    //
+    //var multipleTimeSeries = {};
+    //$.each(ministryValues, function(i, ministryName) {
+    //    multipleTimeSeries[ministryName] = {};
+    //    $.each(yearValues, function(j, yearValue)
+    //    {
+    //        multipleTimeSeries[ministryName][yearValue] =
+    //        {
+    //            x: yearValues[j],
+    //            y: 0,
+    //            name: ""
+    //        }
+    //    });
+    //});
+    //{
+    //    multipleTimeSeries[i] = [];
+    //    for (var j = 0; j < yearValues.length; j++)
+    //    {
+    //        multipleTimeSeries[i][j] = {x: yearValues[j], y: 0, name: ""};
+    //    }
+    //}
 
-    var multipleTimeSeries = [];
-    for (var i = 0; i < ministryValues.length; i++)
-    {
-        multipleTimeSeries[i] = [];
-        for (var j = 0; j < yearValues.length; j++)
-        {
-            multipleTimeSeries[i][j] = {x: yearValues[j], y: 0, name: ""};
-        }
-    }
+    //$.getJSON("data/budget.json", function ( data )
+    //{
+    //    var years = data.children;
+    //    $.each(years, function(i, year)
+    //    {
+    //        var yearI = yearsScale(year.name);
+    //        var sides = year.children;
+    //        $.each(sides, function(j, side)
+    //        {
+    //            var ministries = side.children;
+    //            $.each(ministries, function(k, ministry)
+    //            {
+    //                var ministryI = ministriesScale(ministry.name);
+    //                var departments = ministry.children;
+    //                $.each(departments, function(l, department)
+    //                {
+    //                    var amount = department.size;
+    //                    //var amount = department.size;
+    //                    multipleTimeSeries[ministry.name][year.name] = {
+    //                        x: yearsScale(year.name),
+    //                        y: multipleTimeSeries[ministry.name][year.name].y + amount,
+    //                        name: ministry.name,
+    //                        c: color(ministry.name)
+    //                    };
+    //                });
+    //            });
+    //        });
+    //    });
+        //this.draw(layers0);
+        //drawLegend();
+    //});
+};
 
-    $.getJSON("data/budget.json", function ( data )
-    {
-        var years = data.children;
-        $.each(years, function(i, year)
-        {
-            var yearI = yearsScale(year.name);
-            var sides = year.children;
-            $.each(sides, function(j, side)
-            {
-                var ministries = side.children;
-                $.each(ministries, function(k, ministry)
-                {
-                    var ministryI = ministriesScale(ministry.name);
-                    var departments = ministry.children;
-                    $.each(departments, function(l, department)
-                    {
-                        var amount = sidesScale(side.name) * department.size;
-                        //var amount = department.size;
-                        multipleTimeSeries[ministryI][yearI] = {
-                            x: yearsScale(year.name),
-                            y: multipleTimeSeries[ministryI][yearI].y + amount,
-                            name: ministry.name,
-                            c: color(ministry.name)
-                        };
-                    });
-                });
-            });
-        });
-        drawStreamGraph();
-        drawLegend();
-    });
-}
+streamGraph = new StreamGraph();

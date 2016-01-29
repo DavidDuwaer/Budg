@@ -7,7 +7,13 @@ var runSequence = require('run-sequence');
 
 gulp.task('scripts', function() {
     return gulp.src([
-        './javascript/*.js',
+        './javascript/api.js',
+        './javascript/util.js',
+        './javascript/main.js',
+        './javascript/tabs.js',
+        './javascript/streamgraph.js',
+        './javascript/legend.js',
+        './javascript/treemap.js'
     ]).pipe(concat('all.js'))
         .pipe(gulp.dest('./dist/js'));
 });
