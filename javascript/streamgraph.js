@@ -4,6 +4,14 @@
 
 function StreamGraph()
 {
+    var yearValues = api.getYearValues();
+    var ministryValues = api.getMinistryValues();
+    var yearsScale = d3.scale.linear()
+        .domain(yearValues)
+        .range(d3.range(0, yearValues.length - 1, 1));
+    var ministriesScale = d3.scale.ordinal()
+        .domain(ministryValues)
+        .range(d3.range(0, ministryValues.length - 1, 1));
     var data = api.getSpecificData(state.budgetScale);
 
     /*
@@ -386,6 +394,11 @@ $(document).ready(function() {
     $(".year-label").html(state.year)
     state.subscribe(function(state) {
         $(".year-label").html(state.year)
+    })
+
+    state.subscribe(function(state) {
+        $("#streamGraphDiv svg").remove()
+        StreamGraph()
     })
 })
 

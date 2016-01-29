@@ -4,13 +4,11 @@
  | Main file.
  -------------------------------------------------------------------------*/
 
-var yearValues = api.getYearValues();
-
 var color = d3.scale.category20b();
 
 var state = {
     year: 2016,
-    minimum: +yearValues[0],
+    minimum: +api.getYearValues()[0],
     ministryHighlighted: null,
 
     /*
@@ -42,17 +40,3 @@ var state = {
         }
     }
 };
-
-
-var ministryValues = api.getMinistryValues();
-//var sideValues = getBudgetTypes();
-var sideSigns = state.getSigns();
-var yearsScale = d3.scale.linear()
-    .domain(yearValues)
-    .range(d3.range(0, yearValues.length - 1, 1));
-var ministriesScale = d3.scale.ordinal()
-    .domain(ministryValues)
-    .range(d3.range(0, ministryValues.length - 1, 1));
-//var sidesScale = d3.scale.ordinal()
-//    .domain(sideValues)
-//    .range(sideSigns);
