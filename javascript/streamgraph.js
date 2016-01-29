@@ -95,7 +95,7 @@ function StreamGraph()
             .attr("height", height);
 
         d3.select("#streamGraphDiv").append("div")
-            .attr("class", "year-label")
+            .attr("class", "year-label noselect")
             .text(state.year)
 
         /*
@@ -132,11 +132,11 @@ function StreamGraph()
         canvas.selectAll("text")
             .data(stackLayout)
             .enter()
-            .append("text");
+            .append("text")
         canvas.selectAll("text")
             .data(stackLayout)
             .attr("text-anchor", "middle")
-            .attr("class", "streamGraphLabel")
+            .attr("class", "streamGraphLabel noselect")
             .attr("x", function(d) {
                 var xc = 0, yMax = 0;
                 $.each(d, function(i, point)
