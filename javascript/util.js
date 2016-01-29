@@ -106,5 +106,5 @@ function changeView(view) {
             state.budgetScale = {"U": 1, "V": 1, "O": 0}
             break
     }
-    state.notify()
+    state.notify("changeview")
 }

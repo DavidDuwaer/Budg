@@ -4,6 +4,8 @@
 
 function StreamGraph()
 {
+    $(".year-label").remove()
+    $("#streamGraphDiv svg").remove()
     var yearValues = api.getYearValues();
     var ministryValues = api.getMinistryValues();
     var yearsScale = d3.scale.linear()
@@ -13,6 +15,7 @@ function StreamGraph()
         .domain(ministryValues)
         .range(d3.range(0, ministryValues.length - 1, 1));
     var data = api.getSpecificData(state.budgetScale);
+
 
     /*
      * Create stack layers
@@ -93,6 +96,7 @@ function StreamGraph()
 
         d3.select("#streamGraphDiv").append("div")
             .attr("class", "year-label")
+            .text(state.year)
 
         /*
          * Draw stream graph into canvas
@@ -396,9 +400,10 @@ $(document).ready(function() {
         $(".year-label").html(state.year)
     })
 
-    state.subscribe(function(state) {
-        $("#streamGraphDiv svg").remove()
-        StreamGraph()
+    state.subscribe(function(state, source) {
+        if (source == "changeview") {
+            StreamGraph()
+        }
     })
 })
 
