@@ -97,7 +97,6 @@ function findAssocNode(name) {
 
 function zoomOn(name) {
     var child = findAssocNode(name);
-    console.log(child.parent.name)
     markValueInTable(child.parent.name)
     zoom(child.parent, child);
 }

@@ -228,14 +228,18 @@ function StreamGraph()
         var x = d3.select("#streamGraphSlider").attr("x1")
         var section = Math.round(x * (yearValues.length - 1)/width)
         var snapX = section * width / (yearValues.length - 1)
-        var offset = 10
         snapX = Math.min(snapX, width - sliderOffset)
         snapX = Math.max(snapX, sliderOffset)
         d3.select("#streamGraphSlider")
             .attr("x1", snapX)
             .attr("x2", snapX)
-        state.year = section + state.minimum
-        state.notify()
+        var newYear = section + state.minimum
+        if (state.year == newYear) {
+            // Happy new year
+        } else {
+            state.year = section + state.minimum
+            state.notify()
+        }
     }
 
     function canvasMouseMove()

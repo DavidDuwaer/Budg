@@ -53,7 +53,9 @@ function visualize(data) {
             .append("svg:g")
             .attr("class", "cell")
             .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-            .on("click", function(d) { return zoom(node == d.parent ? root : d.parent, d); })
+            .on("click", function(d) {
+                return zoom(node == d.parent ? root : d.parent, d);
+            })
             .on("mouseover", function(d) {
                 markValueInTable(d.parent.name)
                 d3.select(this)
