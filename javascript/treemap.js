@@ -86,7 +86,7 @@ function visualize(data) {
         .style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
 
     d3.select(window).on("click", function() {
-        var clickOnLegend = d3.event.target.parentNode.className.indexOf("legend") != -1
+        var clickOnLegend = (d3.event.target.parentNode.className + "").indexOf("legend") != -1
         if (clickOnLegend) {
             var text = $(d3.event.target.parentNode).find("text").html()
             zoomOn(text)
