@@ -105,6 +105,7 @@ function StreamGraph()
         canvas.selectAll("path")
             .data(stackLayout)
             .enter().append("path")
+            .attr("class", "noselect")
             .attr("d", area)
             .style("fill", function(d) {
                 //console.log(colorService.ministry(d[0].name));
@@ -195,7 +196,7 @@ function StreamGraph()
             .attr("y1", 0)
             .attr("x2", xSliderScale(yearsScale(state.year)) - sliderOffset)
             .attr("y2", height)
-            .attr("class", "streamGraphSlider")
+            .attr("class", "streamGraphSlider noselect")
             .attr("id", "streamGraphSlider");
 
         /*
