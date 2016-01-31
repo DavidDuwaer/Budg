@@ -24,6 +24,20 @@ function Api()
         return json;
     }
 
+    this.getTestData = function() {
+        var output = null;
+        $.ajax({
+            url: "data/flare.json",
+            dataType: 'json',
+            async: false,
+            success: function (data) {
+                output = data;
+            }
+        });
+
+        return output
+    }
+
     /**
      * Get the year values
      * @returns {Array} Array of integers representing all the years

@@ -10,11 +10,32 @@
 .streamGraphSlider {
   stroke: black;
   stroke-width: 3;
-  stroke-dasharray: (6, 3)
+  opacity: 0.9;
 }
 
 #streamGraphDiv svg {
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+
+#streamGraphDiv {
+  position: relative;
+}
+
+#streamGraphSlider {
+  position: relative;
+  cursor: move;
+}
+
+.year-label{
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  height: auto;
+  width: auto;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  margin: 10px;
 }

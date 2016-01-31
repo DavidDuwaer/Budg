@@ -21,7 +21,7 @@ function getHeight() {
 }
 
 function JSONtoD3Tree(json, name) {
-    return wrapTree(name, JSONtoD3TreeRecur(json))
+    return JSON.parse(JSON.stringify(wrapTree(name, JSONtoD3TreeRecur(json))))
 }
 
 function JSONtoD3TreeRecur(tree) {
@@ -29,23 +29,17 @@ function JSONtoD3TreeRecur(tree) {
     for (var key in tree) {
         var value = tree[key]
         if (typeof value === 'object') {
-            var object = {}
-            object['name'] = key
-            object['children'] = JSONtoD3Tree(value)
-            d3Tree.push(object)
+            d3Tree.push({"name": key, "children": JSONtoD3TreeRecur(value)})
         } else {
-            var leaf = {}
-            leaf['name'] = key
-            leaf['size'] = value
-            d3Tree.push(leaf)
+            d3Tree.push({"name": key, "size": value})
         }
     }
 
-    return JSON.parse(JSON.stringify(d3Tree))
+    return d3Tree
 }
 
 function wrapTree(name, tree) {
-    return {"name": name, "children": tree}
+    return {"name": name, "children": tree};
 }
 
 function getScrollbarWidth() {
@@ -69,4 +63,80 @@ function getScrollbarWidth() {
     outer.parentNode.removeChild(outer);
 
     return widthNoScroll - widthWithScroll;
+}
+
+function markValueInTable(name) {
+    $(".legend__name").removeAttr("style")
+    $(".legend__name text").each(function(i, e) {
+        if (e.innerHTML == name) {
+            var container = $(e).parent().parent().find(".legend__name")
+            container.css("background-color", "#E7BA52")
+        }
+    })
+}
+
+function getColor(name) {
+    var texts = $(".legend__name text")
+    for (var i in $(".legend__name text")) {
+        if (texts[i].innerHTML == name) {
+            return $(texts[i]).parent().parent().find(".legend__color").css("background-color");
+        }
+    }
+    return false
+}
+
+function findAssocNode(name) {
+    for (var key in root["children"]) {
+        if (name == root["children"][key]["name"]) {
+            var node = root["children"][key]["children"][0]
+            node["propagate"] = false
+            return node
+        }
+    }
+}
+
+function zoomOn(name) {
+    var child = findAssocNode(name);
+    markValueInTable(child.parent.name)
+    zoom(child.parent, child);
+}
+
+function changeView(view) {
+    switch(view) {
+        case "u":
+            state.budgetScale = {"U": 0, "V": 1, "O": 1}
+            break
+        case "v":
+            state.budgetScale = {"U": 0, "V": 1, "O": 0}
+            break
+        case "o":
+            state.budgetScale = {"U": 0, "V": 0, "O": 1}
+            break
+        case "uv":
+            state.budgetScale = {"U": 1, "V": 1, "O": 0}
+            break
+    }
+    state.notify("changeview")
+}
+
+function updateBreadcrumbs(d) {
+    var breadcrumbs = getBreadcrumbs(d);
+    setHeader(breadcrumbs)
+}
+
+function setHeader(name) {
+    $(".js-breadcrumbs").html(name)
+}
+
+function setHeaderColor(color) {
+    if (state.rainbow) {
+        $(".js-breadcrumbs").css("background-color", color)
+    }
+}
+
+function setRainbow(value) {
+    state.rainbow = value
+    if (!value) {
+        $(".js-breadcrumbs").removeAttr("style")
+    }
 }

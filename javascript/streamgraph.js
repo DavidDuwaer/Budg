@@ -4,7 +4,19 @@
 
 function StreamGraph()
 {
+    $(".year-label").remove()
+    $("#streamGraphDiv svg").remove()
+    var yearValues = api.getYearValues();
+    var ministryValues = api.getMinistryValues();
+    var yearsScale = d3.scale.linear()
+        .domain(yearValues)
+        .range(d3.range(0, yearValues.length - 1, 1));
+    var ministriesScale = d3.scale.ordinal()
+        .domain(ministryValues)
+        .range(d3.range(0, ministryValues.length - 1, 1));
     var data = api.getSpecificData(state.budgetScale);
+    var sliderOffset = 10
+
 
     /*
      * Create stack layers
@@ -83,18 +95,33 @@ function StreamGraph()
             .attr("width", width)
             .attr("height", height);
 
+        d3.select("#streamGraphDiv").append("div")
+            .attr("class", "year-label noselect")
+            .text(state.year)
+
         /*
          * Draw stream graph into canvas
          */
         canvas.selectAll("path")
             .data(stackLayout)
             .enter().append("path")
+            .attr("class", "noselect")
             .attr("d", area)
             .style("fill", function(d) {
                 //console.log(colorService.ministry(d[0].name));
                 //console.log(d[0].name);
                 return color(d[0].name);
-            });
+            })
+
+        canvas.selectAll("path")
+            .on("mouseover", function(d) {
+                markValueInTable(d[0].name)
+                setHeaderColor(getColor(d[0].name))
+                setHeader(d[0].name)
+            })
+            .on("click", function(d) {
+                zoomOn(d[0].name)
+            })
 
         /*
          * Add tooltips
@@ -111,11 +138,11 @@ function StreamGraph()
         canvas.selectAll("text")
             .data(stackLayout)
             .enter()
-            .append("text");
+            .append("text")
         canvas.selectAll("text")
             .data(stackLayout)
             .attr("text-anchor", "middle")
-            .attr("class", "streamGraphLabel")
+            .attr("class", "streamGraphLabel noselect")
             .attr("x", function(d) {
                 var xc = 0, yMax = 0;
                 $.each(d, function(i, point)
@@ -163,25 +190,14 @@ function StreamGraph()
             });
 
         /*
-         * Add invisible covering layer so that label text can't be selected
-         */
-        canvas.append("rect")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", width)
-            .attr("height", height)
-            .style("opacity", "0")
-            .style("cursor", "inherit");
-
-        /*
          * Add slider
          */
         var slider = canvas.append("line")
-            .attr("x1", xSliderScale(yearsScale(state.year)))
+            .attr("x1", xSliderScale(yearsScale(state.year)) - sliderOffset)
             .attr("y1", 0)
-            .attr("x2", xSliderScale(yearsScale(state.year)))
+            .attr("x2", xSliderScale(yearsScale(state.year)) - sliderOffset)
             .attr("y2", height)
-            .attr("class", "streamGraphSlider")
+            .attr("class", "streamGraphSlider noselect")
             .attr("id", "streamGraphSlider");
 
         /*
@@ -210,36 +226,38 @@ function StreamGraph()
     function mouseUp()
     {
         state.sliderMouseDown = false;
+        snapSlider()
+    }
+
+    function snapSlider() {
+        var x = d3.select("#streamGraphSlider").attr("x1")
+        var section = Math.round(x * (yearValues.length - 1)/width)
+        var snapX = section * width / (yearValues.length - 1)
+        snapX = Math.min(snapX, width - sliderOffset)
+        snapX = Math.max(snapX, sliderOffset)
+        d3.select("#streamGraphSlider")
+            .attr("x1", snapX)
+            .attr("x2", snapX)
+        var newYear = section + state.minimum
+        if (state.year == newYear) {
+            // Happy new year
+        } else {
+            state.year = section + state.minimum
+            state.notify()
+        }
     }
 
     function canvasMouseMove()
     {
         if (state.sliderMouseDown)
         {
-            var X = d3.mouse(this);
-            var xa = Math.round(X[0] * (yearValues.length - 1)/width);
-            xa = Math.max(0, xa);
-            xa = Math.min(yearValues.length - 1, xa);
-            var slider = d3.select("#streamGraphSlider");
-            slider
-                .attr("x1", xSliderScale(xa))
-                .attr("x2", xSliderScale(xa));
-            state.year = xa + state.minimum;
-            state.notify();
+            var position = d3.mouse(this);
+
+            d3.select("#streamGraphSlider")
+                .attr("x1", position[0])
+                .attr("x2", position[0])
         }
 
-        /*
-         * Change cursor appearance with respect to slider
-         */
-        if (mouseAtSlider(this)) {
-            d3.select("body")
-                .style("cursor", "pointer");
-        }
-        else
-        {
-            d3.select("body")
-                .style("cursor", "default");
-        }
     }
 
     function pathMouseOver(d)
@@ -270,31 +288,6 @@ function StreamGraph()
             sliderMouseDown();
     }
 
-    function drawLegend()
-    {
-        /*
-         * Draw legend
-         */
-        var legendRows = d3.select("#colorLegendDiv")
-            .selectAll("span")
-            .attr("class", "legend__item")
-            .data(layers0)
-            .enter()
-            .append("span")
-            .attr("class", "legend__item");
-        legendRows.append("span")
-            .attr("class", "legend__color")
-            .attr("style", function(d) {
-                return "background-color:" + d[0].c + ";";
-            });
-        legendRows.append("span")
-            .attr("class", "legend__name")
-            .append("text")
-            .text(function(d) {
-                return d[0].name;
-            });
-    }
-
     function transition() {
         d3.selectAll("path")
             .data(function() {
@@ -306,94 +299,20 @@ function StreamGraph()
             .duration(2500)
             .attr("d", area);
     }
-
-    function zoomTo(ministryZoomed)
-    {
-        if (ministryZoomed = null)
-        {
-            /*
-             * Zoom out
-             */
-        }
-        else
-        {
-            /*
-             * Zoom in
-             */
-            // Find requested ministry in array
-            var requestedI = ministriesScale(ministryZoomed);
-            // Get parts of array preceding and succeeding requested ministry
-            // Build new part (of the departments of the requested ministry) part of array
-
-            // Concatenate pre, new and suc parts of array to form new array
-            // Draw streamgraph with current array
-            // Animate streamgraph to array where height of all pre and suc points are 0.
-        }
-    }
-
-    /*
-     * Set data independent scales
-     */
-//    var color = d3.scale.linear()
-//            .range(["#c30", "#ea8"]);
-
-    /*
-     * Make data arrays
-     */
-
-    //
-    //var multipleTimeSeries = {};
-    //$.each(ministryValues, function(i, ministryName) {
-    //    multipleTimeSeries[ministryName] = {};
-    //    $.each(yearValues, function(j, yearValue)
-    //    {
-    //        multipleTimeSeries[ministryName][yearValue] =
-    //        {
-    //            x: yearValues[j],
-    //            y: 0,
-    //            name: ""
-    //        }
-    //    });
-    //});
-    //{
-    //    multipleTimeSeries[i] = [];
-    //    for (var j = 0; j < yearValues.length; j++)
-    //    {
-    //        multipleTimeSeries[i][j] = {x: yearValues[j], y: 0, name: ""};
-    //    }
-    //}
-
-    //$.getJSON("data/budget.json", function ( data )
-    //{
-    //    var years = data.children;
-    //    $.each(years, function(i, year)
-    //    {
-    //        var yearI = yearsScale(year.name);
-    //        var sides = year.children;
-    //        $.each(sides, function(j, side)
-    //        {
-    //            var ministries = side.children;
-    //            $.each(ministries, function(k, ministry)
-    //            {
-    //                var ministryI = ministriesScale(ministry.name);
-    //                var departments = ministry.children;
-    //                $.each(departments, function(l, department)
-    //                {
-    //                    var amount = department.size;
-    //                    //var amount = department.size;
-    //                    multipleTimeSeries[ministry.name][year.name] = {
-    //                        x: yearsScale(year.name),
-    //                        y: multipleTimeSeries[ministry.name][year.name].y + amount,
-    //                        name: ministry.name,
-    //                        c: color(ministry.name)
-    //                    };
-    //                });
-    //            });
-    //        });
-    //    });
-        //this.draw(layers0);
-        //drawLegend();
-    //});
 };
+
+$(document).ready(function() {
+    $(".year-label").html(state.year)
+    state.subscribe(function(state) {
+        $(".year-label").html(state.year)
+    })
+
+    state.subscribe(function(state, source) {
+        if (source == "changeview") {
+            StreamGraph()
+        }
+    })
+})
+
 
 streamGraph = new StreamGraph();

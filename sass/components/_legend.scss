@@ -1,7 +1,19 @@
-$legend-font-size: 1rem;
+$legend-font-size: 13px;
 
 .legend__item {
   display: block;
+  cursor: pointer;
+  vertical-align: middle;
+  outline-offset: 1px;
+}
+
+.legend__item:hover {
+  .legend__color {
+    border-radius: 1rem;
+  }
+  .legend__name {
+    background-color: #eee;
+  }
 }
 
 .legend__color {
@@ -15,4 +27,9 @@ $legend-font-size: 1rem;
 
 .legend__name {
   font-size: $legend-font-size;
+  vertical-align: middle;
+}
+
+.legend__name text {
+  vertical-align: middle;
 }

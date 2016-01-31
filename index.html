@@ -2,12 +2,12 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Budgr</title>
+        <title>Budg</title>
         <link rel="stylesheet" href="dist/css/main.css">
     </head>
     <body>
     <header>
-        <h3>Budg</h3>
+        <h3 class="logo">Budg - miljoenennota visualisatie</h3>
         <div class="js-breadcrumbs"></div>
     </header>
     <div class="row full-width">
@@ -30,7 +30,18 @@
                     </div>
                 </div>
                 <div class="settings-view tab-view">
-
+                    <fieldset class="fieldset">
+                        <legend>Weergave</legend>
+                        <label><input type="radio" name="view" onclick="changeView('u')"> Uitgaven</label>
+                        <label><input type="radio" name="view" onclick="changeView('o')"> Ontvangsten</label>
+                        <label><input type="radio" name="view" onclick="changeView('v')"> Verplichtingen</label>
+                        <label><input type="radio" name="view" onclick="changeView('uv')" checked> Uitgaven + Verplichtingen</label>
+                    </fieldset>
+                    <fieldset class="fieldset">
+                        <legend>Regenboog balk</legend>
+                        <label><input type="radio" name="rainbow" value="on" onclick="setRainbow(true)" checked> Aan</label>
+                        <label><input type="radio" name="rainbow" value="of" onclick="setRainbow(false)"> Uit</label>
+                    </fieldset>
                 </div>
             </div>
         </div>

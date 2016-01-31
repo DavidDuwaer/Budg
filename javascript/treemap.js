@@ -10,15 +10,13 @@ var w = $("#canvas").width() - getScrollbarWidth(),
     h = getHeight(),
     x = d3.scale.linear().range([0, w]),
     y = d3.scale.linear().range([0, h]),
-    color = d3.scale.category20b(),
     root,
     node,
     svg,
     tooltip;
 
-// Select years
-console.log(JSONtoD3Tree(api.getSpecificDataForYear(state.budgetScale, state.year), "Begroting"))
-visualize(JSONtoD3Tree(api.getSpecificDataForYear(state.budgetScale, state.year), "Begroting"))
+visualize(JSONtoD3Tree(api.getSpecificDataForYear(state.budgetScale, state.year), "Begroting"));
+
 state.subscribe(function(state) {
     visualize(JSONtoD3Tree(api.getSpecificDataForYear(state.budgetScale, state.year), "Begroting"));
 })
@@ -55,13 +53,21 @@ function visualize(data) {
             .append("svg:g")
             .attr("class", "cell")
             .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-            .on("click", function(d) { return zoom(node == d.parent ? root : d.parent, d); })
+            .on("click", function(d) {
+                return zoom(node == d.parent ? root : d.parent, d);
+            })
             .on("mouseover", function(d) {
-                updateBreadcrumbs(d)
+                markValueInTable(d.parent.name)
                 d3.select(this)
                     .style("opacity", "0.8")
             })
+            .on("mouseenter", function(d) {
+                updateBreadcrumbs(d)
+                var color = $(this).find("rect").css("fill")
+                setHeaderColor(color)
+            })
             .on("mouseout", function(d) {
+                $(".legend__name").removeAttr("style")
                 d3.select(this)
                     .style("opacity", "1")
             });
@@ -78,9 +84,18 @@ function visualize(data) {
         .attr("dy", ".35em")
         .attr("text-anchor", "middle")
         .text(function(d) { return d.name; })
+        .style("fill", "white")
         .style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
 
-    d3.select(window).on("click", function() { zoom(root); });
+    d3.select(window).on("click", function() {
+        var clickOnLegend = (d3.event.target.parentNode.className + "").indexOf("legend") != -1
+        if (clickOnLegend) {
+            var text = $(d3.event.target.parentNode).find("text").html()
+            zoomOn(text)
+        } else {
+            zoom(root);
+        }
+    });
 
     d3.select("select").on("change", function() {
         treemap.value(this.value == "size" ? size : count).nodes(root);
@@ -89,20 +104,13 @@ function visualize(data) {
 }
 
 function size(d) {
+    console.log(d)
+    console.log(d.size)
     return d.size;
 }
 
 function count(d) {
     return 1;
-}
-
-function updateBreadcrumbs(d) {
-    var breadcrumbs = getBreadcrumbs(d);
-    setHeader(breadcrumbs)
-}
-
-function setHeader(name) {
-    $(".js-breadcrumbs").html(name)
 }
 
 function zoom(d, child) {
@@ -116,7 +124,7 @@ function zoom(d, child) {
     y.domain([d.y, d.y + d.dy]);
 
     var t = svg.selectAll("g.cell").transition()
-        .duration(d3.event.altKey ? 7500 : 750)
+        .duration(750)
         .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
 
     t.select("rect")
@@ -129,6 +137,8 @@ function zoom(d, child) {
         .style("opacity", function(d) { return kx * d.dx > d.w ? 1 : 0; });
 
     node = d;
-    d3.event.stopPropagation();
+    try {
+        d3.event.stopPropagation();
+    } catch(e){}
 
 }
