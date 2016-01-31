@@ -99,7 +99,8 @@ function StreamGraph()
         /*
          * Add tooltips
          */
-        canvas.selectAll("path")
+        var paths = canvas.selectAll("path");
+        paths
             .data(stackLayout)
             .append("svg:title")
             .text(function(d) { return d[0].name; });
@@ -189,6 +190,10 @@ function StreamGraph()
         canvas
             .on("mousedown", canvasMouseDown)
             .on("mousemove", canvasMouseMove);
+        paths
+            .data(stackLayout)
+            .on("mouseover", function(d) { return pathMouseOver(d); })
+            .on("mouseout", function(d) { return pathMouseOut(d); });
         slider
             .on("mousedown", sliderMouseDown);
         d3.select(window)
@@ -235,6 +240,18 @@ function StreamGraph()
             d3.select("body")
                 .style("cursor", "default");
         }
+    }
+
+    function pathMouseOver(d)
+    {
+        state.ministryHighlighted = d[0].name;
+        console.log(state.ministryHighlighted);
+    }
+
+    function pathMouseOut(d)
+    {
+        state.ministryHighlighted = null;
+        console.log(state.ministryHighlighted);
     }
 
     function mouseAtSlider(parentObject)
