@@ -97,7 +97,7 @@ function StreamGraph()
 
         d3.select("#streamGraphDiv").append("div")
             .attr("class", "year-label noselect")
-            .text(state.year)
+            .text(state.year);
 
         /*
          * Draw stream graph into canvas
@@ -111,7 +111,7 @@ function StreamGraph()
                 //console.log(colorService.ministry(d[0].name));
                 //console.log(d[0].name);
                 return color(d[0].name);
-            })
+            });
 
         canvas.selectAll("path")
             .on("mouseover", function(d) {
@@ -121,7 +121,7 @@ function StreamGraph()
             })
             .on("click", function(d) {
                 zoomOn(d[0].name)
-            })
+            });
 
         /*
          * Add tooltips
@@ -258,6 +258,16 @@ function StreamGraph()
                 .attr("x2", position[0])
         }
 
+        if (mouseAtSlider(this))
+        {
+            d3.select("body")
+                .style("cursor", "move");
+        }
+        else
+        {
+            d3.select("body")
+                .style("cursor", "inherit");
+        }
     }
 
     function pathMouseOver(d)

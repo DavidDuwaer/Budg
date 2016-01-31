@@ -11,6 +11,8 @@
   stroke: black;
   stroke-width: 3;
   opacity: 0.9;
+  position: relative;
+  cursor: move;
 }
 
 #streamGraphDiv svg {
@@ -21,11 +23,6 @@
 
 #streamGraphDiv {
   position: relative;
-}
-
-#streamGraphSlider {
-  position: relative;
-  cursor: move;
 }
 
 .year-label{
