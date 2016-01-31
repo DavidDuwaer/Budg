@@ -41,3 +41,28 @@ var state = {
         }
     }
 };
+
+function HighlightState()
+{
+    /*
+     * State variables
+     */
+    this.ministry = null;
+
+    /*
+     * Listener design pattern
+     */
+    subscribers = [];
+    this.subscribe = function(callback)
+    {
+        subscribers.push(callback);
+    };
+    this.notify = function(source)
+    {
+        for (var sub in subscribers) {
+            subscribers[sub](this, source);
+        }
+    }
+}
+
+var highlightState = new HighlightState();

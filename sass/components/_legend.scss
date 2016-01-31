@@ -5,6 +5,10 @@ $legend-font-size: 13px;
   cursor: pointer;
   vertical-align: middle;
   outline-offset: 1px;
+  border-width: 1px;
+  border-color: transparent;
+  border-style: solid;
+  padding-left: 4px;
 }
 
 .legend__item:hover {

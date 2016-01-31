@@ -64,16 +64,16 @@ function getScrollbarWidth() {
 
     return widthNoScroll - widthWithScroll;
 }
-
-function markValueInTable(name) {
-    $(".legend__name").removeAttr("style")
-    $(".legend__name text").each(function(i, e) {
-        if (e.innerHTML == name) {
-            var container = $(e).parent().parent().find(".legend__name")
-            container.css("background-color", "#E7BA52")
-        }
-    })
-}
+//
+//function markValueInTable(name) {
+//    $(".legend__name").removeAttr("style")
+//    $(".legend__name text").each(function(i, e) {
+//        if (e.innerHTML == name) {
+//            var container = $(e).parent().parent().find(".legend__name")
+//            container.css("background-color", "#E7BA52")
+//        }
+//    })
+//}
 
 function getColor(name) {
     var texts = $(".legend__name text")
@@ -97,7 +97,8 @@ function findAssocNode(name) {
 
 function zoomOn(name) {
     var child = findAssocNode(name);
-    markValueInTable(child.parent.name)
+    highlightState.ministry = child.parent.name;
+    highlightState.notify();
     zoom(child.parent, child);
 }
 

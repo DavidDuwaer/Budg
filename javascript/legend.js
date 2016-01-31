@@ -4,6 +4,8 @@
 
 function Legend()
 {
+    var rows;
+
     var data = api.getMinistryValues();
     var ministries = new Array();
     $.each(data, function(i, ministryName)
@@ -20,6 +22,7 @@ function Legend()
             .enter()
             .append("span")
             .attr("class", "legend__item");
+        rows = d3.select("#colorLegendDiv").selectAll("span");
         legendRows.append("span")
             .attr("class", "legend__color")
             .attr("style", function(d) {
@@ -31,9 +34,21 @@ function Legend()
             .text(function(d) {
                 return d;
             });
-    }
+    };
 
     this.draw();
+
+    this.updateMinistryHighlight = function()
+    {
+        rows.data(ministries)
+            .style("border-color", function(d) {
+                var result = "transparent";
+                if (d == highlightState.ministry) result = "black";
+                return result;
+            });
+    };
+
+    highlightState.subscribe(this.updateMinistryHighlight);
 }
 
 legend = new Legend();

@@ -106,21 +106,12 @@ function StreamGraph()
             .data(stackLayout)
             .enter().append("path")
             .attr("class", "noselect")
+            .attr("id", function(d) { return d[0].name; })
             .attr("d", area)
             .style("fill", function(d) {
                 //console.log(colorService.ministry(d[0].name));
                 //console.log(d[0].name);
                 return color(d[0].name);
-            });
-
-        canvas.selectAll("path")
-            .on("mouseover", function(d) {
-                markValueInTable(d[0].name)
-                setHeaderColor(getColor(d[0].name))
-                setHeader(d[0].name)
-            })
-            .on("click", function(d) {
-                zoomOn(d[0].name)
             });
 
         /*
@@ -201,19 +192,23 @@ function StreamGraph()
             .attr("id", "streamGraphSlider");
 
         /*
-         * Add mouse behavior
+         * Add interactivity
          */
         canvas
             .on("mousedown", canvasMouseDown)
             .on("mousemove", canvasMouseMove);
         paths
             .data(stackLayout)
-            .on("mouseover", function(d) { return pathMouseOver(d); })
-            .on("mouseout", function(d) { return pathMouseOut(d); });
+            .on("mouseover", pathMouseOver)
+            .on("mouseout", pathMouseOut);
         slider
             .on("mousedown", sliderMouseDown);
         d3.select(window)
             .on("mouseup", mouseUp);
+        canvas.selectAll("path")
+            .on("click", function(d) {
+                zoomOn(d[0].name)
+            });
     };
 
     this.draw(stackLayout0);
@@ -226,23 +221,23 @@ function StreamGraph()
     function mouseUp()
     {
         state.sliderMouseDown = false;
-        snapSlider()
+        snapSlider();
     }
 
     function snapSlider() {
-        var x = d3.select("#streamGraphSlider").attr("x1")
-        var section = Math.round(x * (yearValues.length - 1)/width)
-        var snapX = section * width / (yearValues.length - 1)
-        snapX = Math.min(snapX, width - sliderOffset)
-        snapX = Math.max(snapX, sliderOffset)
+        var x = d3.select("#streamGraphSlider").attr("x1");
+        var section = Math.round(x * (yearValues.length - 1)/width);
+        var snapX = section * width / (yearValues.length - 1);
+        snapX = Math.min(snapX, width - sliderOffset);
+        snapX = Math.max(snapX, sliderOffset);
         d3.select("#streamGraphSlider")
             .attr("x1", snapX)
             .attr("x2", snapX)
-        var newYear = section + state.minimum
+        var newYear = section + state.minimum;
         if (state.year == newYear) {
             // Happy new year
         } else {
-            state.year = section + state.minimum
+            state.year = section + state.minimum;
             state.notify()
         }
     }
@@ -272,14 +267,20 @@ function StreamGraph()
 
     function pathMouseOver(d)
     {
-        state.ministryHighlighted = d[0].name;
-        console.log(state.ministryHighlighted);
+        highlightState.ministry = d[0].name;
+        highlightState.notify();
+        d3.select(this)
+            .style("opacity", "0.8");
+        setHeaderColor(getColor(d[0].name));
+        setHeader(d[0].name);
     }
 
     function pathMouseOut(d)
     {
-        state.ministryHighlighted = null;
-        console.log(state.ministryHighlighted);
+        highlightState.ministry = null;
+        highlightState.notify();
+        d3.select(this)
+            .style("opacity", "1");
     }
 
     function mouseAtSlider(parentObject)

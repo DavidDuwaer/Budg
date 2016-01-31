@@ -57,7 +57,8 @@ function visualize(data) {
                 return zoom(node == d.parent ? root : d.parent, d);
             })
             .on("mouseover", function(d) {
-                markValueInTable(d.parent.name)
+                highlightState.ministry = d.parent.name;
+                highlightState.notify();
                 d3.select(this)
                     .style("opacity", "0.8")
             })
