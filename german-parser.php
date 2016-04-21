@@ -31,7 +31,7 @@ function parse_german($csv) {
             'budget' => $line['einzelplan_1_title'],
             'section' => $line['einzelplan_2_title'],
             'description' => $line['title'],
-            'draft' => $line['amount']
+            'draft' => intval($line['amount'])
         ];
         $table[] = $data;
     }
