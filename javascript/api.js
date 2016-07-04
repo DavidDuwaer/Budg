@@ -10,7 +10,7 @@ function Api()
 {
     var json = [];
 
-    var dataFileNames = ['budget', 'flare_german'];
+    var dataFileNames = ['budget', 'flare_german_small'];
 
     var getData = function(dataSetIndex) {
         if (json[dataSetIndex] == undefined) {

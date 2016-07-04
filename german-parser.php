@@ -110,6 +110,25 @@ function fillMissing($tree) {
     return $tree;
 }
 
+function removeZeroes($tree) {
+    foreach ($tree as $yearKey => $year) { // years
+        foreach ($year as $typeKey => $type) { // types
+            foreach ($type as $ministryKey => $ministry) { // ministry
+                $unset = array();
+                foreach ($ministry as $departmentKey => $amount) {
+                    if ($amount == 0) {
+                        $unset[] = $departmentKey;
+                    }
+                }
+                foreach ($unset as $key) {
+                    unset($tree[$yearKey][$typeKey][$ministryKey][$key]);
+                }
+            }
+        }
+    }
+    return $tree;
+}
+
 // Helper for fillMissing
 function getAllValues($tree) {
     $output = [];
@@ -193,8 +212,14 @@ function wrap($tree) {
 
 // END COPY PASTE
 
-$csv = read_csv_german();
-$data = parse_german($csv);
-$tree = convertToTree($data);
-$completeTree = fillMissing($tree);
-echo(json_encode($completeTree, JSON_UNESCAPED_UNICODE));
+try {
+    $csv = read_csv_german();
+    $data = parse_german($csv);
+    $tree = convertToTree($data);
+    $tree = removeZeroes($tree);
+    $tree = fillMissing($tree);
+    echo(json_encode($tree, JSON_UNESCAPED_UNICODE));
+}
+catch (Exception $e) {
+    echo 'Caught exception: ',  $e->getMessage(), "\n";
+}
