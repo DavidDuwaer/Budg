@@ -13,10 +13,15 @@
     "gulp-concat": "^2.6.0",
     "gulp-sass": "^2.1.1",
     "gulp-sourcemaps": "^1.6.0",
-    "run-sequence": "^1.1.5"
+    "run-sequence": "^1.1.5",
+    "lite-server": "^2.1.0",
+    "concurrently": "^2.0.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"npm run watch\" \"npm run lite\"",
+    "watch": "gulp watch",
+    "lite": "lite-server"
   },
   "repository": {
     "type": "git",

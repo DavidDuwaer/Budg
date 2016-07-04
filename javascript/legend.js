@@ -2,11 +2,11 @@
  * Created by david on 29-1-2016.
  */
 
-function Legend()
+function Legend(dataSetIndex)
 {
     var rows;
 
-    var data = api.getMinistryValues();
+    var data = api.getMinistryValues(dataSetIndex);
     var ministries = new Array();
     $.each(data, function(i, ministryName)
     {
@@ -51,4 +51,4 @@ function Legend()
     highlightState.subscribe(this.updateMinistryHighlight);
 }
 
-legend = new Legend();
+legend = new Legend(0);

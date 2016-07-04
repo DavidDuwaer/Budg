@@ -8,21 +8,23 @@
 
 function Api()
 {
-    var json;
+    var json = [];
 
-    var getData = function() {
-        if (json == undefined) {
+    var dataFileNames = ['budget', 'flare_german'];
+
+    var getData = function(dataSetIndex) {
+        if (json[dataSetIndex] == undefined) {
             $.ajax({
-                url: "data/budget.json",
+                url: "data/" + dataFileNames[dataSetIndex] + ".json",
                 dataType: 'json',
                 async: false,
                 success: function (data) {
-                    json = data;
+                    json[dataSetIndex] = data;
                 }
             });
         }
-        return json;
-    }
+        return json[dataSetIndex];
+    };
 
     this.getTestData = function() {
         var output = null;
@@ -36,7 +38,7 @@ function Api()
         });
 
         return output
-    }
+    };
 
     /**
      * Get the year values
@@ -44,28 +46,29 @@ function Api()
      * covered in the dataset
      */
     this.getYearValues = function() {
-        var data = getData();
-        var values = [];
-        for (var year in data) {
-            values.push(year)
-        }
-        return values
-    }
+        //var data = getData();
+        //var values = [];
+        //for (var year in data) {
+        //    values.push(year)
+        //}
+        //return values
+        return [2013, 2014, 2015];
+    };
 
     /**
      * Get the ministry values
      * @returns {Array} Array of strings with all ministry names
      * covered in the dataset
      */
-    this.getMinistryValues = function() {
-        var data = getData()["2013"]["O"];
+    this.getMinistryValues = function(dataSetIndex) {
+        var data = getData(dataSetIndex)["2013"]["O"];
         var values = [];
         for (var ministry in data) {
             values.push(ministry)
         }
 
         return values
-    }
+    };
 
     /*
      * @return Data object of format
@@ -77,9 +80,9 @@ function Api()
      *             }
      *         }
      */
-    this.getRawData = function(){
-        var data = getData()
-        var output = {}
+    this.getRawData = function(dataSetIndex){
+        var data = getData(dataSetIndex);
+        var output = {};
         for (var yearKey in data) { // root --> 2013-2015
             for (var typeKey in data[yearKey]) { // 2013-2015 --> OUV
                 for (var ministryKey in data[yearKey][typeKey]) { // OUV --> ministry
@@ -110,9 +113,9 @@ function Api()
      *             }
      *         }
      */
-    this.getSpecificData = function(uvo){
-        var data = getData()
-        var output = {}
+    this.getSpecificData = function(dataSetIndex, uvo){
+        var data = getData(dataSetIndex);
+        var output = {};
         for (var yearKey in data) { // root --> 2013-2015
             for (var typeKey in data[yearKey]) { // 2013-2015 --> OUV
                 for (var ministryKey in data[yearKey][typeKey]) { // OUV --> ministry
@@ -142,9 +145,9 @@ function Api()
      *             {<department>:<amount>}
      *         }
      */
-    this.getSpecificDataForYear = function(uvo, year){
-        var data = getData()
-        var output = {}
+    this.getSpecificDataForYear = function(dataSetIndex, uvo, year){
+        var data = getData(dataSetIndex);
+        var output = {};
         for (var typeKey in data[year]) { // 2013-2015 --> OUV
             for (var ministryKey in data[year][typeKey]) { // OUV --> ministry
                 if (!output.hasOwnProperty(ministryKey))

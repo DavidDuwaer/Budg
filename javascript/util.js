@@ -85,23 +85,6 @@ function getColor(name) {
     return false
 }
 
-function findAssocNode(name) {
-    for (var key in root["children"]) {
-        if (name == root["children"][key]["name"]) {
-            var node = root["children"][key]["children"][0]
-            node["propagate"] = false
-            return node
-        }
-    }
-}
-
-function zoomOn(name) {
-    var child = findAssocNode(name);
-    highlightState.ministry = child.parent.name;
-    highlightState.notify();
-    zoom(child.parent, child);
-}
-
 function changeView(view) {
     switch(view) {
         case "u":

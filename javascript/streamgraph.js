@@ -2,20 +2,20 @@
  * Created by david on 27-1-2016.
  */
 
-function StreamGraph()
+function StreamGraph(dataSetIndex)
 {
-    $(".year-label").remove()
-    $("#streamGraphDiv svg").remove()
+    $(".year-label").remove();
+    $("#streamGraph" + dataSetIndex).remove();
     var yearValues = api.getYearValues();
-    var ministryValues = api.getMinistryValues();
+    var ministryValues = api.getMinistryValues(dataSetIndex);
     var yearsScale = d3.scale.linear()
         .domain(yearValues)
         .range(d3.range(0, yearValues.length - 1, 1));
     var ministriesScale = d3.scale.ordinal()
         .domain(ministryValues)
         .range(d3.range(0, ministryValues.length - 1, 1));
-    var data = api.getSpecificData(state.budgetScale);
-    var sliderOffset = 10
+    var data = api.getSpecificData(dataSetIndex, state.budgetScale);
+    var sliderOffset = 10;
 
 
     /*
@@ -31,6 +31,7 @@ function StreamGraph()
         $.each(yearValues, function(j, year)
         {
             j = parseInt(year) - yearValues[0];
+
             stackLayers[i][j] = {
                 x: yearsScale(year),
                 y: 0,
@@ -41,16 +42,19 @@ function StreamGraph()
         {
             $.each(years, function(year, amount)
             {
-                j = parseInt(year) - yearValues[0];
-                stackLayers[i][j].y = stackLayers[i][j].y + amount;
-                j++;
+                if (yearValues.indexOf(parseInt(year)) != -1)
+                {
+                    j = parseInt(year) - yearValues[0];
+                    stackLayers[i][j].y = stackLayers[i][j].y + amount;
+                    j++;
+                }
             });
         });
         i++;
     });
 
     var width = $("#streamGraphDiv").width() - getScrollbarWidth(),
-        height = getHeight();
+        height = getHeight()/2;
 
     /*
      * The ministry to which the streamGraph is zoomed in. When null, the streamGraph is zoomed
@@ -60,7 +64,6 @@ function StreamGraph()
 
     var stack = d3.layout.stack().offset("wiggle");
     var stackLayout0 = stack(stackLayers);
-    var stackLayout1 = stack(stackLayers);
 
     /*
      * Define scales
@@ -92,8 +95,9 @@ function StreamGraph()
          * Add canvas
          */
         var canvas = d3.select("#streamGraphDiv").append("svg")
-            .attr("width", width)
-            .attr("height", height);
+            .style("width", width)
+            .style("height", height)
+            .attr("id", "streamGraph" + dataSetIndex);
 
         d3.select("#streamGraphDiv").append("div")
             .attr("class", "year-label noselect")
@@ -129,7 +133,7 @@ function StreamGraph()
         canvas.selectAll("text")
             .data(stackLayout)
             .enter()
-            .append("text")
+            .append("text");
         canvas.selectAll("text")
             .data(stackLayout)
             .attr("text-anchor", "middle")
@@ -207,7 +211,7 @@ function StreamGraph()
             .on("mouseup", mouseUp);
         canvas.selectAll("path")
             .on("click", function(d) {
-                zoomOn(d[0].name)
+                treemaps[dataSetIndex].zoomOn(d[0].name)
             });
     };
 
@@ -232,7 +236,7 @@ function StreamGraph()
         snapX = Math.max(snapX, sliderOffset);
         d3.select("#streamGraphSlider")
             .attr("x1", snapX)
-            .attr("x2", snapX)
+            .attr("x2", snapX);
         var newYear = section + state.minimum;
         if (state.year == newYear) {
             // Happy new year
@@ -310,20 +314,21 @@ function StreamGraph()
             .duration(2500)
             .attr("d", area);
     }
-};
+}
 
 $(document).ready(function() {
-    $(".year-label").html(state.year)
+    $(".year-label").html(state.year);
     state.subscribe(function(state) {
         $(".year-label").html(state.year)
-    })
+    });
 
-    state.subscribe(function(state, source) {
-        if (source == "changeview") {
-            StreamGraph()
-        }
-    })
-})
+    //state.subscribe(function(state, source) {
+    //    if (source == "changeview") {
+    //        StreamGraph()
+    //    }
+    //})
+});
 
-
-streamGraph = new StreamGraph();
+streamGraphs = [];
+streamGraphs[0] = new StreamGraph(0);
+streamGraphs[1] = new StreamGraph(1);

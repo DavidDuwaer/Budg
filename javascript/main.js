@@ -7,7 +7,7 @@
 var color = d3.scale.category20b();
 
 var state = {
-    year: 2016,
+    year: parseInt(api.getYearValues()[api.getYearValues().length-1]),
     minimum: +api.getYearValues()[0],
     ministryHighlighted: null,
     rainbow: $("input[name='rainbow'][value='on']").is(':checked'),
