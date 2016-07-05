@@ -19,7 +19,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently \"npm run watch\" \"npm run lite\"",
+    "start": "gulp build && concurrently \"npm run watch\" \"npm run lite\"",
     "watch": "gulp watch",
     "lite": "lite-server"
   },

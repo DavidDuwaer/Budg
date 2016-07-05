@@ -22,6 +22,9 @@ function TreeMap(dataSetIndex)
     });
 
     thiss.zoom = function(d, child) {
+        if (typeof d === "undefined") {
+          d = this.root
+        }
         if (d == this.root) {
             setHeader(d.name);
         } else {
@@ -36,8 +39,8 @@ function TreeMap(dataSetIndex)
             .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
 
         t.select("rect")
-            .attr("width", function(d) { return kx * d.dx - 1; })
-            .attr("height", function(d) { return ky * d.dy - 1; });
+            .attr("width", function(d) { return Math.max(kx * d.dx - 1, 0); })
+            .attr("height", function(d) { return Math.max(ky * d.dy - 1, 0); });
 
         t.select("text")
             .attr("x", function(d) { return kx * d.dx / 2; })
