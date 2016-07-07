@@ -106,6 +106,7 @@ function StreamGraph(dataSetIndex)
         /*
          * Draw stream graph into canvas
          */
+
         canvas.selectAll("path")
             .data(stackLayout)
             .enter().append("path")
@@ -116,7 +117,18 @@ function StreamGraph(dataSetIndex)
                 //console.log(colorService.ministry(d[0].name));
                 //console.log(d[0].name);
                 return color(d[0].name);
-            });
+            })
+            .attr("stroke", "black")
+            .attr("stroke-width", 0)
+            .attr("clip-path", function(d) { return "url(#" + d[0].name.replace(/[ .,\/#!$%\^&\*;:{}=\-_`~()]/g,"") + "Clip)"; });
+
+        canvas.selectAll("clipPath") // clippaths to fake inside strokes
+            .data(stackLayout)
+            .enter().append("clipPath")
+            .attr("class", "noselect")
+            .attr("id", function(d) { return d[0].name.replace(/[ .,\/#!$%\^&\*;:{}=\-_`~()]/g,"") + "Clip"; })
+            .append("path")
+            .attr("d", area);
 
         /*
          * Add tooltips
@@ -269,22 +281,36 @@ function StreamGraph(dataSetIndex)
         }
     }
 
+    this.updateMinistryHighlight = function()
+    {
+        d3.select("#streamGraph" + dataSetIndex)
+            .selectAll("path")
+            .data(stackLayout0)
+            .attr("stroke-width", function(d) {
+                var result = 0;
+                if (d[0].name == highlightState.ministry) result = 4;
+                return result;
+            });
+    };
+
+    highlightState.subscribe(this.updateMinistryHighlight);
+
     function pathMouseOver(d)
     {
         highlightState.ministry = d[0].name;
         highlightState.notify();
-        d3.select(this)
-            .style("opacity", "0.8");
-        setHeaderColor(getColor(d[0].name));
-        setHeader(d[0].name);
+        //d3.select(this)
+        //    .style("opacity", "0.8");
+        //setHeaderColor(getColor(d[0].name));
+        //setHeader(d[0].name);
     }
 
     function pathMouseOut(d)
     {
         highlightState.ministry = null;
         highlightState.notify();
-        d3.select(this)
-            .style("opacity", "1");
+        //d3.select(this)
+        //    .style("opacity", "1");
     }
 
     function mouseAtSlider(parentObject)

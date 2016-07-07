@@ -1,6 +1,9 @@
-/**
- * Created by david on 29-1-2016.
- */
+/*-------------------------------------------------------------------------
+ | Legend
+ | ========================================================================
+ | This file communicates with the D3 library and uses the utility
+ | functions from the utility script.
+ -------------------------------------------------------------------------*/
 
 function Legend(dataSetIndex)
 {
@@ -15,14 +18,27 @@ function Legend(dataSetIndex)
 
     this.draw = function()
     {
-        var legendRows = d3.select("#colorLegendDiv")
+        var sidePanelHeight = 0;
+        var sidePanel = d3.select("#sidePanel");
+        sidePanel
+            .select(".control-tabs")
+            .attr("class", function(e) {
+                sidePanelHeight = this.getBoundingClientRect().height;
+                return "control-tabs"; });
+        sidePanel
+            .selectAll(".tab-view")
+            .style("height", (getHeight() - sidePanelHeight) + "px")
+            .style("overflow-y", "scroll");
+        var legendRows = d3.select("#colorLegendDiv" + dataSetIndex)
             .selectAll("span")
             .attr("class", "legend__item")
             .data(ministries)
             .enter()
             .append("span")
-            .attr("class", "legend__item");
-        rows = d3.select("#colorLegendDiv").selectAll("span");
+            .attr("class", "legend__item")
+            .on("mouseover", mouseOver)
+            .on("mouseout", mouseOut);
+        rows = d3.select("#colorLegendDiv" + dataSetIndex).selectAll("span");
         legendRows.append("span")
             .attr("class", "legend__color")
             .attr("style", function(d) {
@@ -49,6 +65,19 @@ function Legend(dataSetIndex)
     };
 
     highlightState.subscribe(this.updateMinistryHighlight);
+
+    function mouseOver(d)
+    {
+        highlightState.ministry = d;
+        highlightState.notify();
+    }
+
+    function mouseOut(d)
+    {
+        highlightState.ministry = null;
+        highlightState.notify();
+    }
 }
 
-legend = new Legend(0);
+legend0 = new Legend(0);
+legend1 = new Legend(1);

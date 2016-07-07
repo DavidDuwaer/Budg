@@ -71,14 +71,21 @@ function TreeMap(dataSetIndex)
         thiss.zoom(child.parent, child);
     };
 
+    var dataSet = JSONtoD3Tree(api.getSpecificDataForYear(dataSetIndex, state.budgetScale, state.year), "Begroting");
+
+    node = thiss.root = dataSet;
+
+    var treemap = d3.layout.treemap()
+        .round(false)
+        .size([w, h])
+        .sticky(true)
+        .value(function(d) { return d.size; });
+
+    var nodes = treemap.nodes(thiss.root)
+        .filter(function(d) { return !d.children; });
+
     var visualize = function(data) {
         d3.select("#treeMap" + dataSetIndex).remove();
-
-        var treemap = d3.layout.treemap()
-            .round(false)
-            .size([w, h])
-            .sticky(true)
-            .value(function(d) { return d.size; });
 
         svg = d3.select("#canvas").append("div")
             .attr("class", "chart")
@@ -89,14 +96,10 @@ function TreeMap(dataSetIndex)
             .attr("width", w)
             .attr("height", h)
             .append("svg:g")
-            .attr("transform", "translate(.5,.5)");
-        node = thiss.root = data;
+            .attr("transform", "translate(.5,.5)")
+            .attr("id", "treeMap" + dataSetIndex + "Content");
 
         setHeader(thiss.root.name);
-
-        var nodes = treemap.nodes(thiss.root)
-            .filter(function(d) { return !d.children; });
-
 
         var cell = svg.selectAll("g")
             .data(nodes)
@@ -107,26 +110,15 @@ function TreeMap(dataSetIndex)
             .on("click", function(d) {
                 return thiss.zoom(node == d.parent ? this.root : d.parent, d);
             })
-            .on("mouseover", function(d) {
-                highlightState.ministry = d.parent.name;
-                highlightState.notify();
-                d3.select(this)
-                    .style("opacity", "0.8")
-            })
-            .on("mouseenter", function(d) {
-                updateBreadcrumbs(d);
-                var color = $(this).find("rect").css("fill");
-                setHeaderColor(color)
-            })
-            .on("mouseout", function(d) {
-                $(".legend__name").removeAttr("style");
-                d3.select(this)
-                    .style("opacity", "1")
-            });
+            .on("mouseover", mouseOver)
+            .on("mouseenter", mouseEnter)
+            .on("mouseout", mouseOut);
 
         cell.append("svg:rect")
             .attr("width", function(d) { return Math.max(d.dx - 1, 0); })
             .attr("height", function(d) { return Math.max(d.dy - 1, 0); })
+            .attr("stroke", "black")
+            .attr("stroke-width", 0)
             .style("fill", function(d) {
                 return color(d.parent.name); });
 
@@ -156,7 +148,7 @@ function TreeMap(dataSetIndex)
         });
     };
 
-    visualize(JSONtoD3Tree(api.getSpecificDataForYear(dataSetIndex, state.budgetScale, state.year), "Begroting"));
+    visualize(dataSet);
 
     var size = function(d) {
         console.log(d);
@@ -167,6 +159,42 @@ function TreeMap(dataSetIndex)
     var count = function(d) {
         return 1;
     };
+
+    this.updateMinistryHighlight = function()
+    {
+
+        d3.select("#treeMap" + dataSetIndex + "Content")
+            .selectAll("g")
+            .data(nodes)
+            .select("rect")
+            .attr("stroke-width", function(d) {
+                var result = 0;
+                if (d.parent.name == highlightState.ministry) result = 2;
+                return result;
+            });
+    };
+
+    highlightState.subscribe(this.updateMinistryHighlight);
+
+    function mouseOver(d) {
+        highlightState.ministry = d.parent.name;
+        highlightState.notify();
+        //d3.select(this).style("opacity", "0.8");
+    }
+
+    function mouseEnter(d) {
+        updateBreadcrumbs(d);
+        var color = $(this).find("rect").css("fill");
+        setHeaderColor(color)
+    }
+
+    function mouseOut(d) {
+        highlightState.ministry = null;
+        highlightState.notify();
+        //$(".legend__name").removeAttr("style");
+        //d3.select(this)
+        //    .style("opacity", "1")
+    }
 }
 
 var treemaps = [
