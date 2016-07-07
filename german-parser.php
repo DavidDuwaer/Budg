@@ -22,7 +22,7 @@ function translate_type($type) {
     }
 }
 
-function parse_german($csv) {
+function parse_german($csv, &$biggest_value) {
     $table = [];
     foreach ($csv as $line) {
         $data = [
@@ -34,6 +34,7 @@ function parse_german($csv) {
             'draft' => intval($line['amount'])
         ];
         $table[] = $data;
+        if ($biggest_value < $data['draft']) $biggest_value = $data['draft'];
     }
     return $table;
 }
@@ -85,16 +86,19 @@ function addKey(&$tree, $key) {
     return $key;
 }
 
-function convertToTree($data) {
+function convertToTree($data, $biggest_value) {
     // year > type > budget > description
     $tree = [];
     foreach ($data as $object) {
-        $keys = [];
-        $keys[] = addKey($tree, $object['year']);
-        $keys[] = addKey($tree[$keys[0]], $object['type']);
-        $keys[] = addKey($tree[$keys[0]][$keys[1]], $object['budget']);
-        $keys[] = addKey($tree[$keys[0]][$keys[1]][$keys[2]], $object['description']);
-        $tree[$keys[0]][$keys[1]][$keys[2]][$keys[3]] = $object['draft'];
+        if ($object['draft'] > 0.0005 * $biggest_value)
+        {
+            $keys = [];
+            $keys[] = addKey($tree, $object['year']);
+            $keys[] = addKey($tree[$keys[0]], $object['type']);
+            $keys[] = addKey($tree[$keys[0]][$keys[1]], $object['budget']);
+            $keys[] = addKey($tree[$keys[0]][$keys[1]][$keys[2]], $object['description']);
+            $tree[$keys[0]][$keys[1]][$keys[2]][$keys[3]] = $object['draft'];
+        }
     }
     return $tree;
 }
@@ -110,7 +114,7 @@ function fillMissing($tree) {
     return $tree;
 }
 
-function removeZeroes($tree) {
+function removeNegligible($tree) {
     foreach ($tree as $yearKey => $year) { // years
         foreach ($year as $typeKey => $type) { // types
             foreach ($type as $ministryKey => $ministry) { // ministry
@@ -214,9 +218,11 @@ function wrap($tree) {
 
 try {
     $csv = read_csv_german();
-    $data = parse_german($csv);
-    $tree = convertToTree($data);
-    $tree = removeZeroes($tree);
+    $biggest_value = 0;
+    $data = parse_german($csv, $biggest_value);
+    // echo $biggest_value . "\n";
+    $tree = convertToTree($data, $biggest_value);
+    //$tree = removeNegligible($tree);
     $tree = fillMissing($tree);
     echo(json_encode($tree, JSON_UNESCAPED_UNICODE));
 }
