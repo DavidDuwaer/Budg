@@ -120,7 +120,7 @@ function TreeMap(dataSetIndex)
             .attr("stroke", "black")
             .attr("stroke-width", 0)
             .style("fill", function(d) {
-                return color(d.parent.name); });
+                return color(dataSetIndex, d.parent.name); });
 
 
         cell.append("svg:text")
@@ -169,7 +169,8 @@ function TreeMap(dataSetIndex)
             .select("rect")
             .attr("stroke-width", function(d) {
                 var result = 0;
-                if (d.parent.name == highlightState.ministry) result = 2;
+                if (ministrySimilarityClass(dataSetIndex, d.parent.name) ==
+                    ministrySimilarityClass(highlightState.dataSetIndex, highlightState.ministry)) result = 2;
                 return result;
             });
     };
@@ -177,6 +178,7 @@ function TreeMap(dataSetIndex)
     highlightState.subscribe(this.updateMinistryHighlight);
 
     function mouseOver(d) {
+        highlightState.dataSetIndex = dataSetIndex;
         highlightState.ministry = d.parent.name;
         highlightState.notify();
         //d3.select(this).style("opacity", "0.8");
@@ -189,6 +191,7 @@ function TreeMap(dataSetIndex)
     }
 
     function mouseOut(d) {
+        highlightState.dataSetIndex = null;
         highlightState.ministry = null;
         highlightState.notify();
         //$(".legend__name").removeAttr("style");

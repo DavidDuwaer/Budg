@@ -116,7 +116,7 @@ function StreamGraph(dataSetIndex)
             .style("fill", function(d) {
                 //console.log(colorService.ministry(d[0].name));
                 //console.log(d[0].name);
-                return color(d[0].name);
+                return color(dataSetIndex, d[0].name);
             })
             .attr("stroke", "black")
             .attr("stroke-width", 0)
@@ -288,7 +288,8 @@ function StreamGraph(dataSetIndex)
             .data(stackLayout0)
             .attr("stroke-width", function(d) {
                 var result = 0;
-                if (d[0].name == highlightState.ministry) result = 4;
+                if (ministrySimilarityClass(dataSetIndex, d[0].name) ==
+                    ministrySimilarityClass(highlightState.dataSetIndex, highlightState.ministry)) result = 4;
                 return result;
             });
     };
@@ -297,6 +298,7 @@ function StreamGraph(dataSetIndex)
 
     function pathMouseOver(d)
     {
+        highlightState.dataSetIndex = dataSetIndex;
         highlightState.ministry = d[0].name;
         highlightState.notify();
         //d3.select(this)
@@ -307,6 +309,7 @@ function StreamGraph(dataSetIndex)
 
     function pathMouseOut(d)
     {
+        highlightState.dataSetIndex = null;
         highlightState.ministry = null;
         highlightState.notify();
         //d3.select(this)

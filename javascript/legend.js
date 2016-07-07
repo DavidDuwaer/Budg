@@ -42,7 +42,7 @@ function Legend(dataSetIndex)
         legendRows.append("span")
             .attr("class", "legend__color")
             .attr("style", function(d) {
-                return "background-color:" + color(d) + ";";
+                return "background-color:" + color(dataSetIndex, d) + ";";
             });
         legendRows.append("span")
             .attr("class", "legend__name")
@@ -59,7 +59,8 @@ function Legend(dataSetIndex)
         rows.data(ministries)
             .style("border-color", function(d) {
                 var result = "transparent";
-                if (d == highlightState.ministry) result = "black";
+                if (ministrySimilarityClass(dataSetIndex, d) ==
+                    ministrySimilarityClass(highlightState.dataSetIndex, highlightState.ministry)) result = "black";
                 return result;
             });
     };
@@ -68,12 +69,14 @@ function Legend(dataSetIndex)
 
     function mouseOver(d)
     {
+        highlightState.dataSetIndex = dataSetIndex;
         highlightState.ministry = d;
         highlightState.notify();
     }
 
     function mouseOut(d)
     {
+        highlightState.dataSetIndex = null;
         highlightState.ministry = null;
         highlightState.notify();
     }
