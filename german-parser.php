@@ -90,7 +90,7 @@ function convertToTree($data, $biggest_value) {
     // year > type > budget > description
     $tree = [];
     foreach ($data as $object) {
-        if ($object['draft'] > 0.0005 * $biggest_value)
+        if ($object['draft'] > 0.003 * $biggest_value)
         {
             $keys = [];
             $keys[] = addKey($tree, $object['year']);
@@ -111,25 +111,6 @@ function fillMissing($tree) {
         }
     }
 
-    return $tree;
-}
-
-function removeNegligible($tree) {
-    foreach ($tree as $yearKey => $year) { // years
-        foreach ($year as $typeKey => $type) { // types
-            foreach ($type as $ministryKey => $ministry) { // ministry
-                $unset = array();
-                foreach ($ministry as $departmentKey => $amount) {
-                    if ($amount == 0) {
-                        $unset[] = $departmentKey;
-                    }
-                }
-                foreach ($unset as $key) {
-                    unset($tree[$yearKey][$typeKey][$ministryKey][$key]);
-                }
-            }
-        }
-    }
     return $tree;
 }
 
@@ -220,9 +201,7 @@ try {
     $csv = read_csv_german();
     $biggest_value = 0;
     $data = parse_german($csv, $biggest_value);
-    // echo $biggest_value . "\n";
     $tree = convertToTree($data, $biggest_value);
-    //$tree = removeNegligible($tree);
     $tree = fillMissing($tree);
     echo(json_encode($tree, JSON_UNESCAPED_UNICODE));
 }

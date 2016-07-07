@@ -16,7 +16,7 @@ function readCSV() {
     return $dataStrings;
 }
 
-function cleanAndConvert($dataStrings) {
+function cleanAndConvert($dataStrings, &$biggest_value) {
     $table = [];
     foreach ($dataStrings as $dataString) {
         if ($dataString == "") continue;
@@ -34,6 +34,7 @@ function cleanAndConvert($dataStrings) {
             'draft'         => $row[7] * readUnit($row[2]), // Ontwerpbegroting
         ];
         $table[] = $data;
+        if ($biggest_value < $data['draft']) $biggest_value = $data['draft'];
     }
     return $table;
 }
@@ -46,16 +47,19 @@ function addKey(&$tree, $key) {
     return $key;
 }
 
-function convertToTree($data) {
+function convertToTree($data, $biggest_value) {
     // year > type > budget > description
     $tree = [];
     foreach ($data as $object) {
-        $keys = [];
-        $keys[] = addKey($tree, $object['year']);
-        $keys[] = addKey($tree[$keys[0]], $object['type']);
-        $keys[] = addKey($tree[$keys[0]][$keys[1]], $object['budget']);
-        $keys[] = addKey($tree[$keys[0]][$keys[1]][$keys[2]], $object['description']);
-        $tree[$keys[0]][$keys[1]][$keys[2]][$keys[3]] = $object['draft'];
+        if ($object['draft'] > 0.003 * $biggest_value)
+        {
+            $keys = [];
+            $keys[] = addKey($tree, $object['year']);
+            $keys[] = addKey($tree[$keys[0]], $object['type']);
+            $keys[] = addKey($tree[$keys[0]][$keys[1]], $object['budget']);
+            $keys[] = addKey($tree[$keys[0]][$keys[1]][$keys[2]], $object['description']);
+            $tree[$keys[0]][$keys[1]][$keys[2]][$keys[3]] = $object['draft'];
+        }
     }
     return $tree;
 }
@@ -153,8 +157,9 @@ function wrap($tree) {
 }
 
 $csv = readCSV();
-$data = cleanAndConvert($csv);
-$tree = convertToTree($data);
+$biggest_value = 0;
+$data = cleanAndConvert($csv, $biggest_value);
+$tree = convertToTree($data, $biggest_value);
 $completeTree = fillMissing($tree);
 //$output = wrap(makeD3Readable($completeTree));
 echo(json_encode($completeTree, JSON_UNESCAPED_UNICODE));
