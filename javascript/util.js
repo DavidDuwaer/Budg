@@ -17,7 +17,7 @@ function getBreadcrumbs(d) {
 }
 
 function getHeight() {
-    return $(window).height() - $(".logo").outerHeight() - $(".js-breadcrumbs").outerHeight() - 27;
+    return $(window).height() - $(".logo").outerHeight() - $(".js-breadcrumbs").outerHeight() - 29;
 }
 
 function JSONtoD3Tree(json, name) {
