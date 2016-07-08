@@ -9,7 +9,7 @@ function getBreadcrumbs(d) {
     var index = 0;
     var element = d;
     while (element.parent != null) {
-        breadcrumbs[index++] = element.name;
+        breadcrumbs[index++] = element.name + (element.size ? (" (€" + numberWithCommas(element.size) + ")") : "");
         element = element.parent;
     }
 
@@ -123,4 +123,12 @@ function setRainbow(value) {
     if (!value) {
         $(".js-breadcrumbs").removeAttr("style")
     }
+}
+
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function simpleChars(s) {
+    return s.replace(/[^a-zA-Z0-9]/g, "");
 }

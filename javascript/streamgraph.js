@@ -1,10 +1,11 @@
+
 /**
  * Created by david on 27-1-2016.
  */
 
 function StreamGraph(dataSetIndex)
 {
-    $(".year-label").remove();
+    $("#yearLabel" + dataSetIndex).remove();
     $("#streamGraph" + dataSetIndex).remove();
     var yearValues = api.getYearValues();
     var ministryValues = api.getMinistryValues(dataSetIndex);
@@ -35,7 +36,8 @@ function StreamGraph(dataSetIndex)
             stackLayers[i][j] = {
                 x: yearsScale(year),
                 y: 0,
-                name: ministry
+                name: ministry,
+                size: null
             };
         });
         $.each(departments, function(department, years)
@@ -46,6 +48,7 @@ function StreamGraph(dataSetIndex)
                 {
                     j = parseInt(year) - yearValues[0];
                     stackLayers[i][j].y = stackLayers[i][j].y + amount;
+                    stackLayers[i][j].size = amount;
                     j++;
                 }
             });
@@ -101,7 +104,8 @@ function StreamGraph(dataSetIndex)
 
         d3.select("#streamGraphDiv").append("div")
             .attr("class", "year-label noselect")
-            .text(state.year);
+            .attr("id", "yearLabel" + dataSetIndex)
+            .text(state.year[dataSetIndex]);
 
         /*
          * Draw stream graph into canvas
@@ -200,12 +204,12 @@ function StreamGraph(dataSetIndex)
          * Add slider
          */
         var slider = canvas.append("line")
-            .attr("x1", xSliderScale(yearsScale(state.year)) - sliderOffset)
+            .attr("x1", xSliderScale(yearsScale(state.year[dataSetIndex])) - sliderOffset)
             .attr("y1", 0)
-            .attr("x2", xSliderScale(yearsScale(state.year)) - sliderOffset)
+            .attr("x2", xSliderScale(yearsScale(state.year[dataSetIndex])) - sliderOffset)
             .attr("y2", height)
             .attr("class", "streamGraphSlider noselect")
-            .attr("id", "streamGraphSlider");
+            .attr("id", "streamGraphSlider" + dataSetIndex);
 
         /*
          * Add interactivity
@@ -241,19 +245,19 @@ function StreamGraph(dataSetIndex)
     }
 
     function snapSlider() {
-        var x = d3.select("#streamGraphSlider").attr("x1");
+        var x = d3.select("#streamGraphSlider" + dataSetIndex).attr("x1");
         var section = Math.round(x * (yearValues.length - 1)/width);
         var snapX = section * width / (yearValues.length - 1);
         snapX = Math.min(snapX, width - sliderOffset);
         snapX = Math.max(snapX, sliderOffset);
-        d3.select("#streamGraphSlider")
+        d3.select("#streamGraphSlider" + dataSetIndex)
             .attr("x1", snapX)
             .attr("x2", snapX);
         var newYear = section + state.minimum;
-        if (state.year == newYear) {
+        if (state.year[dataSetIndex] == newYear) {
             // Happy new year
         } else {
-            state.year = section + state.minimum;
+            state.year[dataSetIndex] = section + state.minimum;
             state.notify()
         }
     }
@@ -264,7 +268,7 @@ function StreamGraph(dataSetIndex)
         {
             var position = d3.mouse(this);
 
-            d3.select("#streamGraphSlider")
+            d3.select("#streamGraphSlider" + dataSetIndex)
                 .attr("x1", position[0])
                 .attr("x2", position[0])
         }
@@ -299,7 +303,7 @@ function StreamGraph(dataSetIndex)
     function pathMouseOver(d)
     {
         highlightState.dataSetIndex = dataSetIndex;
-        highlightState.ministry = d[0].name;
+        highlightState.ministry = simpleChars(d[0].name);
         highlightState.notify();
         //d3.select(this)
         //    .style("opacity", "0.8");
@@ -320,7 +324,7 @@ function StreamGraph(dataSetIndex)
     {
         var result = false;
         var XMouse = d3.mouse(parentObject);
-        var xSlider = d3.select("#streamGraphSlider").attr("x1");
+        var xSlider = d3.select("#streamGraphSlider" + dataSetIndex).attr("x1");
         if (Math.abs(XMouse[0] - xSlider) < 20)
             result = true;
         return result;
@@ -346,9 +350,18 @@ function StreamGraph(dataSetIndex)
 }
 
 $(document).ready(function() {
-    $(".year-label").html(state.year);
+    $("#yearLabel0")
+        .html(state.year[0]);
     state.subscribe(function(state) {
-        $(".year-label").html(state.year)
+        $("#yearLabel0")
+            .html(state.year[0]);
+    });
+
+    $("#yearLabel1")
+        .html(state.year[1]);
+    state.subscribe(function(state) {
+        $("#yearLabel1")
+            .html(state.year[1])
     });
 
     //state.subscribe(function(state, source) {

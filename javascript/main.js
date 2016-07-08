@@ -13,53 +13,54 @@ function ministrySimilarityClass(dataSetIndex, ministryName)
     var similarityClass =
         [
             {
-                "A, Infrastructuurfonds": 0,
-                "IXa, Nationale Schuld": 1,
-                "IXb, FinanciÃ«n": 2,
-                "J, Deltafonds": 3,
-                "V, Buitenlandse Zaken": 4,
-                "VI, Veiligheid en Justitie": 5,
-                "VII, Binnenlandse Zaken en Koninkrijksrelaties": 6,
-                "VIII, Onderwijs, Cultuur en Wetenschap": 7,
-                "X, Defensie": 8,
-                "XIII, Economische Zaken": 9,
-                "XV, Sociale Zaken en Werkgelegenheid": 10,
-                "B, Gemeentefonds": 11,
-                "C, Provinciefonds": 12,
-                "IV, Koninkrijksrelaties": 13,
-                "XII, Infrastructuur en Milieu": 14,
-                "XVI, Volksgezondheid, Welzijn en Sport": 15,
-                "XVIII, Wonen en Rijksdienst": 16,
-                "XVII, Buitenlandse Handel & Ontwikkelingssamenwerking": 17
+                "AInfrastructuurfonds": 0,
+                "IXaNationaleSchuld": 1,
+                "IXbFinancin": 2,
+                "JDeltafonds": 3,
+                "VBuitenlandseZaken": 4,
+                "VIVeiligheidenJustitie": 5,
+                "VIIBinnenlandseZakenenKoninkrijksrelaties": 6,
+                "VIIIOnderwijsCultuurenWetenschap": 7,
+                "XDefensie": 8,
+                "XIIIEconomischeZaken": 9,
+                "XVSocialeZakenenWerkgelegenheid": 10,
+                "BGemeentefonds": 11,
+                "CProvinciefonds": 12,
+                "IVKoninkrijksrelaties": 13,
+                "XIIInfrastructuurenMilieu": 14,
+                "XVIVolksgezondheidWelzijnenSport": 15,
+                "XVIIIWonenenRijksdienst": 16,
+                "XVIIBuitenlandseHandelOntwikkelingssamenwerking": 17
             },
             {
-                "AuswÃ¤rtiges Amt": 18,
-                "Bundesministerium des Innern": 19,
-                "Bundesministerium der Justiz": 5,
-                "Bundesministerium der Finanzen": 2,
-                "Bundesministerium fÃ¼r Wirtschaft und Technologie": 7,
-                "Bundesministerium fÃ¼r ErnÃ¤hrung, Landwirtschaft und Verbraucherschutz": 23,
-                "Bundesministerium fÃ¼r Arbeit und Soziales": 24,
-                "Bundesministerium fÃ¼r Verkehr, Bau und Stadtentwicklung": 25,
-                "Bundesministerium der Verteidigung": 8,
-                "Bundesministerium fÃ¼r Gesundheit": 15,
-                "Bundesministerium fÃ¼r Umwelt, Naturschutz und Reaktorsicherheit": 28,
-                "Bundesministerium fÃ¼r Familie, Senioren, Frauen und Jugend": 29,
-                "Bundesministerium fÃ¼r wirtschaftliche Zusammenarbeit und Entwicklung": 30,
-                "Bundesministerium fÃ¼r Bildung und Forschung": 31,
+                "AuswrtigesAmt": 18,
+                "BundesministeriumdesInnern": 19,
+                "BundesministeriumderJustiz": 5,
+                "BundesministeriumderFinanzen": 2,
+                "BundesministeriumfrWirtschaftundTechnologie": 7,
+                "BundesministeriumfrErnhrungLandwirtschaftundVerbraucherschutz": 23,
+                "BundesministeriumfrArbeitundSoziales": 24,
+                "BundesministeriumfrVerkehrBauundStadtentwicklung": 25,
+                "BundesministeriumderVerteidigung": 8,
+                "BundesministeriumfrGesundheit": 15,
+                "BundesministeriumfrUmweltNaturschutzundReaktorsicherheit": 28,
+                "BundesministeriumfrFamilieSeniorenFrauenundJugend": 29,
+                "BundesministeriumfrwirtschaftlicheZusammenarbeitundEntwicklung": 30,
+                "BundesministeriumfrBildungundForschung": 31,
                 "Bundesschuld": 1,
-                "Allgemeine Finanzverwaltung": 33,
-                "Deutscher Bundestag": 34,
-                "Bundeskanzlerin und Bundeskanzleramt": 35,
+                "AllgemeineFinanzverwaltung": 33,
+                "DeutscherBundestag": 34,
+                "BundeskanzlerinundBundeskanzleramt": 35,
                 "Bundesverfassungsgericht": 36,
                 "Bundesrechnungshof": 37,
-                "Bundesministerium der Justiz und fÃ¼r Verbraucherschutz": 38,
-                "Bundesministerium fÃ¼r Wirtschaft und Energie": 39,
-                "Bundesministerium fÃ¼r ErnÃ¤hrung und Landwirtschaft": 40,
-                "Bundesministerium fÃ¼r Verkehr und digitale Infrastruktur": 41,
-                "Bundesministerium fÃ¼r Umwelt, Naturschutz, Bau und Reaktorsicherheit": 42
+                "BundesministeriumderJustizundfrVerbraucherschutz": 38,
+                "BundesministeriumfrWirtschaftundEnergie": 39,
+                "BundesministeriumfrErnhrungundLandwirtschaft": 40,
+                "BundesministeriumfrVerkehrunddigitaleInfrastruktur": 41,
+                "BundesministeriumfrUmweltNaturschutzBauundReaktorsicherheit": 42
             }
         ];
+    ministryName = simpleChars(ministryName);
     var simClass;
     if (similarityClass[dataSetIndex][ministryName] == undefined)
         simClass = ministryName;
@@ -76,7 +77,10 @@ function color(dataSetIndex, ministryName)
 }
 
 var state = {
-    year: parseInt(api.getYearValues()[api.getYearValues().length-1]),
+    year: [
+        parseInt(api.getYearValues()[api.getYearValues().length-1]),
+        parseInt(api.getYearValues()[api.getYearValues().length-1])
+        ],
     minimum: +api.getYearValues()[0],
     ministryHighlighted: "null",
     rainbow: $("input[name='rainbow'][value='on']").is(':checked'),

@@ -70,7 +70,7 @@ function Legend(dataSetIndex)
     function mouseOver(d)
     {
         highlightState.dataSetIndex = dataSetIndex;
-        highlightState.ministry = d;
+        highlightState.ministry = simpleChars(d);
         highlightState.notify();
     }
 

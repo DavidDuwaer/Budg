@@ -18,7 +18,7 @@ function TreeMap(dataSetIndex)
         thiss = this;
 
     state.subscribe(function(state) {
-        visualize(JSONtoD3Tree(api.getSpecificDataForYear(dataSetIndex, state.budgetScale, state.year), "Begroting"));
+        visualize(JSONtoD3Tree(api.getSpecificDataForYear(dataSetIndex, state.budgetScale, state.year[dataSetIndex]), "Begroting"));
     });
 
     thiss.zoom = function(d, child) {
@@ -66,12 +66,12 @@ function TreeMap(dataSetIndex)
 
     thiss.zoomOn = function(name) {
         var child = findAssocNode(name);
-        highlightState.ministry = child.parent.name;
+        highlightState.ministry = simpleChars(child.parent.name);
         highlightState.notify();
         thiss.zoom(child.parent, child);
     };
 
-    var dataSet = JSONtoD3Tree(api.getSpecificDataForYear(dataSetIndex, state.budgetScale, state.year), "Begroting");
+    var dataSet = JSONtoD3Tree(api.getSpecificDataForYear(dataSetIndex, state.budgetScale, state.year[dataSetIndex]), "Begroting");
 
     node = thiss.root = dataSet;
 
@@ -120,7 +120,9 @@ function TreeMap(dataSetIndex)
             .attr("stroke", "black")
             .attr("stroke-width", 0)
             .style("fill", function(d) {
-                return color(dataSetIndex, d.parent.name); });
+                return color(dataSetIndex, d.parent.name); })
+            .append("svg:title")
+            .text(function(d) { return d.name + ": €" + numberWithCommas(d.size); });
 
 
         cell.append("svg:text")
@@ -130,6 +132,7 @@ function TreeMap(dataSetIndex)
             .attr("text-anchor", "middle")
             .text(function(d) { return d.name; })
             .style("fill", "white")
+            .style("mouse-events", "none")
             .style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
 
         d3.select(window).on("click", function() {
@@ -179,7 +182,7 @@ function TreeMap(dataSetIndex)
 
     function mouseOver(d) {
         highlightState.dataSetIndex = dataSetIndex;
-        highlightState.ministry = d.parent.name;
+        highlightState.ministry = simpleChars(d.parent.name);
         highlightState.notify();
         //d3.select(this).style("opacity", "0.8");
     }
