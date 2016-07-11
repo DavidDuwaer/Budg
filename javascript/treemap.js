@@ -45,7 +45,7 @@ function TreeMap(dataSetIndex)
         t.select("text")
             .attr("x", function(d) { return kx * d.dx / 2; })
             .attr("y", function(d) { return ky * d.dy / 2; })
-            .style("opacity", function(d) { return kx * d.dx > d.w ? 1 : 0; });
+            .style("display", function(d) { return kx * d.dx > d.w ? "block" : "none"; });
 
         node = d;
         try {
@@ -133,7 +133,7 @@ function TreeMap(dataSetIndex)
             .text(function(d) { return d.name; })
             .style("fill", "white")
             .style("mouse-events", "none")
-            .style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
+            .style("display", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? "block" : "none"; });
 
         d3.select(window).on("click", function() {
             var clickOnLegend = (d3.event.target.parentNode.className + "").indexOf("legend") != -1;
