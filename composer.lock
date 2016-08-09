@@ -4,20 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a266392a308111fb02204ffc52b598ab",
+    "hash": "771e1870b9ee2cdd0ba2b20ca18672f5",
+    "content-hash": "8d6234e61d500496619e2b05b048916a",
     "packages": [
         {
             "name": "zurb/foundation",
-            "version": "6.1.1",
+            "version": "6.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zurb/foundation-sites.git",
-                "reference": "b19360be6b44857bb1ec93f96478fc3086c0b642"
+                "reference": "7a6ed604689635ddda430ae46a100d30c415959b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zurb/foundation-sites/zipball/b19360be6b44857bb1ec93f96478fc3086c0b642",
-                "reference": "b19360be6b44857bb1ec93f96478fc3086c0b642",
+                "url": "https://api.github.com/repos/zurb/foundation-sites/zipball/7a6ed604689635ddda430ae46a100d30c415959b",
+                "reference": "7a6ed604689635ddda430ae46a100d30c415959b",
                 "shasum": ""
             },
             "type": "library",
@@ -43,7 +44,7 @@
                 "sass",
                 "scss"
             ],
-            "time": "2015-12-23 22:56:09"
+            "time": "2016-04-08 18:15:06"
         }
     ],
     "packages-dev": [],

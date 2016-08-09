@@ -102,10 +102,20 @@ function StreamGraph(dataSetIndex)
             .style("height", height)
             .attr("id", "streamGraph" + dataSetIndex);
 
-        d3.select("#streamGraphDiv").append("div")
-            .attr("class", "year-label noselect")
-            .attr("id", "yearLabel" + dataSetIndex)
-            .text(state.year[dataSetIndex]);
+        // Add year labels
+        // Avoid doing it twice
+        if (document.querySelectorAll(".year-labels").length < 1) {
+            d3.select("#streamGraphDiv").append("div")
+                .attr("class", "year-labels noselect")
+
+            console.log(yearValues.length);
+            for (var i = 0; i < yearValues.length; i++) {
+                d3.select(".year-labels").append("div")
+                    .attr("class", "year-label noselect")
+                    .attr("id", "yearLabel" + yearValues[i])
+                    .text(yearValues[i]);
+            }
+        }
 
         /*
          * Draw stream graph into canvas
