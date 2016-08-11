@@ -103,7 +103,7 @@ var state = {
         return this.budgetScale[budgetType];
     },
 
-    sliderMouseDown: "false",
+    sliderMouseDown: false,
     subscribers: [],
     subscribe: function(callback) {
         this.subscribers.push(callback)
