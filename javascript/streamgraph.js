@@ -17,6 +17,7 @@ function StreamGraph(dataSetIndex)
         .range(d3.range(0, ministryValues.length - 1, 1));
     var data = api.getSpecificData(dataSetIndex, state.budgetScale);
     var sliderOffset = 10;
+    var thiss = this;
 
 
     /*
@@ -91,6 +92,32 @@ function StreamGraph(dataSetIndex)
         .x(function(d) { return x(d.x); })
         .y0(function(d) { return y(d.y0); })
         .y1(function(d) { return y(d.y0 + d.y); });
+
+
+
+    thiss.snapSlider = function() {
+        var x = d3.select("#streamGraphSlider" + dataSetIndex).attr("x1");
+        var section = Math.round(x * (yearValues.length - 1)/width);
+        var snapX = section * width / (yearValues.length - 1);
+        snapX = Math.min(snapX, width - sliderOffset);
+        snapX = Math.max(snapX, sliderOffset);
+        d3.select("#streamGraphSlider" + dataSetIndex)
+            .attr("x1", snapX)
+            .attr("x2", snapX);
+        var newYear = section + state.minimum;
+        if (state.year[dataSetIndex] == newYear) {
+            // Happy new year
+        } else {
+            state.year[dataSetIndex] = section + state.minimum;
+            state.notify()
+        }
+    };
+
+    thiss.mouseUp = function()
+    {
+        state.sliderMouseDown = false;
+        thiss.snapSlider();
+    };
 
     this.draw = function(stackLayout)
     {
@@ -234,7 +261,7 @@ function StreamGraph(dataSetIndex)
         slider
             .on("mousedown", sliderMouseDown);
         d3.select(window)
-            .on("mouseup", mouseUp);
+            .on("mouseup."+dataSetIndex, thiss.mouseUp);
         canvas.selectAll("path")
             .on("click", function(d) {
                 treemaps[dataSetIndex].zoomOn(d[0].name)
@@ -246,30 +273,6 @@ function StreamGraph(dataSetIndex)
     function sliderMouseDown()
     {
         state.sliderMouseDown = true;
-    }
-
-    function mouseUp()
-    {
-        state.sliderMouseDown = false;
-        snapSlider();
-    }
-
-    function snapSlider() {
-        var x = d3.select("#streamGraphSlider" + dataSetIndex).attr("x1");
-        var section = Math.round(x * (yearValues.length - 1)/width);
-        var snapX = section * width / (yearValues.length - 1);
-        snapX = Math.min(snapX, width - sliderOffset);
-        snapX = Math.max(snapX, sliderOffset);
-        d3.select("#streamGraphSlider" + dataSetIndex)
-            .attr("x1", snapX)
-            .attr("x2", snapX);
-        var newYear = section + state.minimum;
-        if (state.year[dataSetIndex] == newYear) {
-            // Happy new year
-        } else {
-            state.year[dataSetIndex] = section + state.minimum;
-            state.notify()
-        }
     }
 
     function canvasMouseMove()
