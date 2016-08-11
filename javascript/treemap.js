@@ -8,7 +8,7 @@
 function TreeMap(dataSetIndex)
 {
     // Global variables
-    var w = $("#canvas").width() - getScrollbarWidth(),
+    var w = $("#canvas"+dataSetIndex).width() - getScrollbarWidth(),
         h = getHeight()/2,
         x = d3.scale.linear().range([0, w]),
         y = d3.scale.linear().range([0, h]),
@@ -17,18 +17,14 @@ function TreeMap(dataSetIndex)
         tooltip,
         thiss = this;
 
-    state.subscribe(function(state) {
-        visualize(JSONtoD3Tree(api.getSpecificDataForYear(dataSetIndex, state.budgetScale, state.year[dataSetIndex]), "Begroting"));
-    });
-
     thiss.zoom = function(d, child) {
         if (typeof d === "undefined") {
-          d = this.root
+          d = this.root;
         }
         if (d == this.root) {
             setHeader(d.name);
         } else {
-            updateBreadcrumbs(child)
+            updateBreadcrumbs(child);
         }
         var kx = w / d.dx, ky = h / d.dy;
         x.domain([d.x, d.x + d.dx]);
@@ -57,9 +53,9 @@ function TreeMap(dataSetIndex)
     var findAssocNode = function(name) {
         for (var key in thiss.root["children"]) {
             if (name == thiss.root["children"][key]["name"]) {
-                var node = thiss.root["children"][key]["children"][0]
-                node["propagate"] = false
-                return node
+                var node = thiss.root["children"][key]["children"][0];
+                node["propagate"] = false;
+                return node;
             }
         }
     };
@@ -73,21 +69,24 @@ function TreeMap(dataSetIndex)
 
     var dataSet = JSONtoD3Tree(api.getSpecificDataForYear(dataSetIndex, state.budgetScale, state.year[dataSetIndex]), "Begroting");
 
-    node = thiss.root = dataSet;
+    node = thiss.root = null;
 
-    var treemap = d3.layout.treemap()
-        .round(false)
-        .size([w, h])
-        .sticky(true)
-        .value(function(d) { return d.size; });
+    thiss.nodes = null;
 
-    var nodes = treemap.nodes(thiss.root)
-        .filter(function(d) { return !d.children; });
-
-    var visualize = function(data) {
+    thiss.visualize = function(data) {
         d3.select("#treeMap" + dataSetIndex).remove();
 
-        svg = d3.select("#canvas").append("div")
+        var treemap = d3.layout.treemap()
+            .round(false)
+            .size([w, h])
+            .sticky(true)
+            .value(function(d) { return d.size; });
+
+        node = thiss.root = data;
+        thiss.nodes = treemap.nodes(data)
+            .filter(function(d) { return !d.children; });
+
+        svg = d3.select("#canvas" + dataSetIndex).append("div")
             .attr("class", "chart")
             .style("width", w + "px")
             .style("height", h + "px")
@@ -99,10 +98,10 @@ function TreeMap(dataSetIndex)
             .attr("transform", "translate(.5,.5)")
             .attr("id", "treeMap" + dataSetIndex + "Content");
 
-        setHeader(thiss.root.name);
+        setHeader(data.name);
 
         var cell = svg.selectAll("g")
-            .data(nodes)
+            .data(thiss.nodes)
             .enter()
             .append("svg:g")
             .attr("class", "cell")
@@ -151,7 +150,11 @@ function TreeMap(dataSetIndex)
         });
     };
 
-    visualize(dataSet);
+    thiss.visualize(dataSet);
+
+    state.subscribe(function() {
+        thiss.visualize(JSONtoD3Tree(api.getSpecificDataForYear(dataSetIndex, state.budgetScale, state.year[dataSetIndex]), "Begroting"));
+    });
 
     var size = function(d) {
         console.log(d);
@@ -168,7 +171,7 @@ function TreeMap(dataSetIndex)
 
         d3.select("#treeMap" + dataSetIndex + "Content")
             .selectAll("g")
-            .data(nodes)
+            .data(thiss.nodes)
             .select("rect")
             .attr("stroke-width", function(d) {
                 var result = 0;

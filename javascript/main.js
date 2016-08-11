@@ -110,7 +110,7 @@ var state = {
     },
     notify: function(source) {
         for (var sub in this.subscribers) {
-            this.subscribers[sub]("this", source)
+            this.subscribers[sub](this, source)
         }
     }
 };
